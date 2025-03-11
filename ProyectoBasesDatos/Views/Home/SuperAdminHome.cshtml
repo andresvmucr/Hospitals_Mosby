@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bienvenido al Panel de Administración</h1>
+    <p>Seleccione una opción para gestionar:</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Administradores</h5>
+                    <p class="card-text">Gestiona los administradores del sistema.</p>
+                    <a href="@Url.Action("Index", "Administradores")" class="btn btn-primary">Ir a Administradores</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Especialidades</h5>
+                    <p class="card-text">Gestiona las especialidades médicas.</p>
+                    <a href="@Url.Action("Index", "Especialidades")" class="btn btn-primary">Ir a Especialidades</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hospitales</h5>
+                    <p class="card-text">Gestiona los hospitales registrados.</p>
+                    <a href="@Url.Action("Index", "Hospitales")" class="btn btn-primary">Ir a Hospitales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
