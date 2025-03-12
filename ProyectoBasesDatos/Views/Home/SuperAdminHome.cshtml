@@ -1,40 +1,210 @@
 ﻿@{
-    ViewData["Title"] = "Inicio";
+    ViewData["Title"] = "Panel de Administración";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bienvenido al Panel de Administración</h1>
-    <p>Seleccione una opción para gestionar:</p>
-</div>
+<div class="container-fluid py-5 px-4">
+    <!-- Header con efecto de gradiente -->
+    <div class="text-center mb-5 p-5 rounded-lg header-banner">
+        <h1 class="display-4 fw-bold text-white mb-3">Panel de Control</h1>
+        <p class="lead text-white opacity-90">Sistema de Gestión Médica Integral</p>
+    </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Administradores</h5>
-                    <p class="card-text">Gestiona los administradores del sistema.</p>
-                    <a href="@Url.Action("Admins", "Users")" class="btn btn-primary">Ir a Administradores</a>
+    <!-- Stats Row -->
+    <div class="row stats-row mb-5 g-3">
+        <div class="col-md-3">
+            <div class="stats-card rounded-lg p-3 d-flex align-items-center">
+                <div class="stats-icon bg-primary text-white">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-uppercase fw-semibold">Usuarios Activos</h6>
+                    <h3 class="mb-0 fw-bold">1,256</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Especialidades</h5>
-                    <p class="card-text">Gestiona las especialidades médicas.</p>
-                    <a href="@Url.Action("Index", "Specialties")" class="btn btn-primary">Ir a Especialidades</a>
+        <div class="col-md-3">
+            <div class="stats-card rounded-lg p-3 d-flex align-items-center">
+                <div class="stats-icon bg-success text-white">
+                    <i class="bi bi-calendar2-check"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-uppercase fw-semibold">Citas Hoy</h6>
+                    <h3 class="mb-0 fw-bold">35</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Hospitales</h5>
-                    <p class="card-text">Gestiona los hospitales registrados.</p>
-                    <a href="@Url.Action("Index", "Hospitals")" class="btn btn-primary">Ir a Hospitales</a>
+        <div class="col-md-3">
+            <div class="stats-card rounded-lg p-3 d-flex align-items-center">
+                <div class="stats-icon bg-info text-white">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-uppercase fw-semibold">Hospitales</h6>
+                    <h3 class="mb-0 fw-bold">18</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card rounded-lg p-3 d-flex align-items-center">
+                <div class="stats-icon bg-warning text-white">
+                    <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-uppercase fw-semibold">Especialidades</h6>
+                    <h3 class="mb-0 fw-bold">24</h3>
                 </div>
             </div>
         </div>
     </div>
+
+    <h2 class="fw-bold mb-4 ps-2 border-start border-4 border-primary">Gestión del Sistema</h2>
+
+    <div class="row g-4">
+        <!-- Tarjeta de Administradores -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card admin-primary h-100">
+                <div class="card-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title fw-bold mb-3">Administradores</h5>
+                    <p class="card-text">Control total sobre usuarios con privilegios administrativos en la plataforma.</p>
+                    <a href="@Url.Action("Admins", "Users")" class="btn btn-light rounded-pill px-4 mt-3">
+                        <i class="bi bi-gear-fill me-2"></i>Administrar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Especialidades -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card admin-success h-100">
+                <div class="card-icon">
+                    <i class="bi bi-clipboard2-pulse-fill"></i>
+                </div>
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title fw-bold mb-3">Especialidades</h5>
+                    <p class="card-text">Configuración de especialidades médicas disponibles para los profesionales.</p>
+                    <a href="@Url.Action("Index", "Specialties")" class="btn btn-light rounded-pill px-4 mt-3">
+                        <i class="bi bi-gear-fill me-2"></i>Administrar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Hospitales -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card admin-info h-100">
+                <div class="card-icon">
+                    <i class="bi bi-hospital-fill"></i>
+                </div>
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title fw-bold mb-3">Hospitales</h5>
+                    <p class="card-text">Gestión de centros médicos y hospitales afiliados en todo el país.</p>
+                    <a href="@Url.Action("Index", "Hospitals")" class="btn btn-light rounded-pill px-4 mt-3">
+                        <i class="bi bi-gear-fill me-2"></i>Administrar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+<style>
+    /* Estilos para el encabezado con gradiente */
+    .header-banner {
+        background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+        background-size: 300% 300%;
+        animation: gradient-animation 8s ease infinite;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+
+
+    /* Tarjetas de estadísticas */
+    .stats-card {
+        background-color: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    /* Tarjetas de administración */
+    .admin-card {
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        color: white;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.13);
+    }
+
+        .admin-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+        }
+
+        .admin-card .card-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 3.5rem;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+            transition: all 0.4s ease;
+        }
+
+        .admin-card:hover .card-icon {
+            transform: rotate(0deg) scale(1.2);
+            opacity: 0.25;
+        }
+
+    .admin-primary {
+        background: linear-gradient(45deg, #4361ee, #3f37c9);
+    }
+
+    .admin-success {
+        background: linear-gradient(45deg, #4caf50, #2e7d32);
+    }
+
+    .admin-info {
+        background: linear-gradient(45deg, #03a9f4, #0277bd);
+    }
+
+    .admin-warning {
+        background: linear-gradient(45deg, #ff9800, #ef6c00);
+    }
+
+    .admin-danger {
+        background: linear-gradient(45deg, #f44336, #c62828);
+    }
+
+    .admin-dark {
+        background: linear-gradient(45deg, #455a64, #263238);
+    }
+
+    .admin-card .btn {
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+        .admin-card .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+</style>

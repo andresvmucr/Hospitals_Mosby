@@ -42,9 +42,39 @@ namespace ProyectoBasesDatos.Controllers
             return View(hospital);
         }
 
-        // GET: Hospitals/Create
-        public IActionResult Create()
+
+        public async Task<string> GenerateId()
         {
+            var hospital = await _context.Hospitals
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+            var nextId = 0;
+            string newId = $"HOSP{nextId:D3}";
+            if (hospital == null)
+            {
+                Console.WriteLine("New hospital id: " + newId);
+                return newId; 
+
+            }
+
+            string lastId = hospital.Id;
+            string number = lastId.Substring(4);
+            if (int.TryParse(number, out int lastNumber)) {
+                nextId = lastNumber + 1;
+            }
+
+            newId = $"HOSP{nextId:D3}";
+            Console.WriteLine("New hospitals id: " + newId);
+            return newId;
+           
+        }
+
+
+        // GET: Hospitals/Create
+        public async Task<IActionResult> Create()
+        {
+            string newId = await GenerateId();
+            ViewData["GeneratedId"] = newId;
             return View();
         }
 
@@ -115,38 +145,6 @@ namespace ProyectoBasesDatos.Controllers
             return View(hospital);
         }
 
-        // GET: Hospitals/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var hospital = await _context.Hospitals
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (hospital == null)
-            {
-                return NotFound();
-            }
-
-            return View(hospital);
-        }
-
-        // POST: Hospitals/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var hospital = await _context.Hospitals.FindAsync(id);
-            if (hospital != null)
-            {
-                _context.Hospitals.Remove(hospital);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool HospitalExists(string id)
         {

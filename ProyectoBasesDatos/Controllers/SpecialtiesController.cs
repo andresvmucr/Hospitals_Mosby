@@ -42,9 +42,39 @@ namespace ProyectoBasesDatos.Controllers
             return View(specialty);
         }
 
-        // GET: Specialties/Create
-        public IActionResult Create()
+        public async Task<string> GenerateId()
         {
+            var specialty = await _context.Specialties
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+            var nextId = 0;
+
+            string newId = $"ESP{nextId:D3}";
+            if (specialty == null)
+            {
+                Console.WriteLine("New specialty id: " + newId);
+                return newId;
+
+            }
+
+            string lastId = specialty.Id;
+            string number = lastId.Substring(3);
+            if (int.TryParse(number, out int lastNumber))
+            {
+                nextId = lastNumber + 1;
+            }
+
+            newId = $"ESP{nextId:D3}";
+            Console.WriteLine("New specialty id: " + newId);
+            return newId;
+
+        }
+
+        // GET: Specialties/Create
+        public async Task<IActionResult> Create()
+        {
+            string newId = await GenerateId();
+            ViewData["GeneratedId"] = newId;
             return View();
         }
 

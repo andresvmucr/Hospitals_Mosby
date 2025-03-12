@@ -21,7 +21,7 @@
                             <label asp-for="Id" class="form-label fw-bold">Código Único</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
-                                <input asp-for="Id" class="form-control" required placeholder="Ingrese el código único del hospital" />
+                                <input asp-for="Id" class="form-control" value="@ViewData["GeneratedId"]" readonly />
                             </div>
                             <span asp-validation-for="Id" class="text-danger"></span>
                             <small class="form-text text-muted">Código único de identificación del hospital en el sistema.</small>

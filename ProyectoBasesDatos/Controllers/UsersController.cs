@@ -27,9 +27,12 @@ namespace ProyectoBasesDatos.Controllers
 
         public async Task<IActionResult> Admins()
         {
-            //var dbContext = _context.Users.Include(u => u.Role == "admin");
-            var dbContext = _context.Users.Include(u => u.Hospital);
-            return View(await dbContext.ToListAsync());
+            var adminUsers = await _context.Users
+           .Include(u => u.Hospital)
+           .Where(u => u.Role == "admin")
+           .ToListAsync();
+
+            return View(adminUsers);
         }
 
         // GET: Users/Details/5
@@ -69,10 +72,18 @@ namespace ProyectoBasesDatos.Controllers
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (user.Role == "admin")
+                {
+                    return RedirectToAction(nameof(Admins));
+                } else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id", user.HospitalId);
             return View(user);
+
         }
 
         // GET: Users/Edit/5
