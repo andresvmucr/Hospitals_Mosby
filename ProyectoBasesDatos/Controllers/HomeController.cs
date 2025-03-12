@@ -19,8 +19,9 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+    public IActionResult AdminHome()
     {
+        Console.WriteLine("IActionResult AdminHome");
         return View();
     }
 

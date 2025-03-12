@@ -46,8 +46,11 @@ namespace ProyectoBasesDatos.Controllers
             if (user.Role == "superadmin")
             {
                 return RedirectToAction("SuperAdminHome", "Home");
+            } else if (user.Role == "admin") {
+                return RedirectToAction("AdminHome", "Home");
             }
-            return View();
+
+                return View();
         }
     }
 }
