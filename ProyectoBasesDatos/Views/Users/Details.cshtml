@@ -1,0 +1,149 @@
+﻿@model ProyectoBasesDatos.Models.User
+@{
+    ViewData["Title"] = "Detalles del Usuario";
+    var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
+
+    // Establecer el nombre completo
+    string nombreCompleto = $"{Model.UName} {Model.Firstlastname} {Model.Secondlastname}".Trim();
+
+    // Determinar el género completo
+    string generoCompleto = Model.Gender?.ToUpper() switch
+    {
+        "M" => "Masculino",
+        "F" => "Femenino",
+        _ => Model.Gender
+    };
+
+    // Determinar la clase de color para el rol
+    string rolClass = Model.Role switch
+    {
+        "Admin" => "bg-danger",
+        "Doctor" => "bg-primary",
+        "Nurse" => "bg-success",
+        "Patient" => "bg-secondary",
+        _ => "bg-info"
+    };
+
+    // Obtener inicial para avatar
+    string userInitial = !string.IsNullOrEmpty(Model.UName) ? Model.UName.Substring(0, 1).ToUpper() : "?";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-user me-2"></i>Detalles del Usuario</h4>
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-light btn-sm me-2">
+                    <i class="fas fa-edit me-1"></i>Editar
+                </a>
+                @if (userRole.ToUpper() == "SUPERADMIN")
+                {
+                    <a asp-asp-controller="Users" asp-action="Admins" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row">
+                <!-- Sección de información personal -->
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="user-avatar @($"bg-{(Model.Role == "Admin" ? "danger" : Model.Role == "Doctor" ? "primary" : Model.Role == "Nurse" ? "success" : "secondary")}")"
+                             style="width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            @userInitial
+                        </div>
+                        <div class="ms-3">
+                            <h3 class="mb-0">@nombreCompleto</h3>
+                            <span class="badge @rolClass">@Model.Role</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fas fa-id-card me-2"></i>Información Personal</h5>
+                                    <hr>
+
+                                    <div class="mb-3">
+                                        <strong><i class="fas fa-birthday-cake text-muted me-2"></i>Fecha de Nacimiento:</strong>
+                                        <p class="mb-0">@Model.Birthdate.ToString("dd/MM/yyyy")</p>
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <strong><i class="fas fa-venus-mars text-muted me-2"></i>Género:</strong>
+                                        <p class="mb-0">@generoCompleto</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fas fa-address-book me-2"></i>Contacto</h5>
+                                    <hr>
+
+                                    <div class="mb-3">
+                                        <strong><i class="fas fa-phone text-muted me-2"></i>Teléfono:</strong>
+                                        <p class="mb-0">@(string.IsNullOrEmpty(Model.Phone) ? "No disponible" : Model.Phone)</p>
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <strong><i class="fas fa-map-marker-alt text-muted me-2"></i>Dirección:</strong>
+                                        <p class="mb-0">@(string.IsNullOrEmpty(Model.Address) ? "No disponible" : Model.Address)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de información del sistema -->
+                <div class="col-lg-4">
+                    <div class="card h-100 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="fas fa-cogs me-2"></i>Información del Sistema</h5>
+                            <hr>
+
+                            <div class="mb-3">
+                                <strong><i class="fas fa-fingerprint text-muted me-2"></i>ID de Usuario:</strong>
+                                <p class="mb-0">@Model.Id</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong><i class="fas fa-user-tag text-muted me-2"></i>Nombre de Usuario:</strong>
+                                <p class="mb-0">@Model.UName</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong><i class="fas fa-hospital text-muted me-2"></i>Hospital Asignado:</strong>
+                                <p class="mb-0">
+                                    @if (Model.Hospital != null)
+                                    {
+                                        <span>Hospital #@Model.Hospital.Id</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No asignado</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- No mostrar la contraseña por motivos de seguridad -->
+                            <div class="mb-0">
+                                <strong><i class="fas fa-lock text-muted me-2"></i>Contraseña:</strong>
+                                <p class="mb-0">
+                                    <span class="text-muted">••••••••</span>
+                                    <span class="badge bg-warning text-dark ms-2">Protegida</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

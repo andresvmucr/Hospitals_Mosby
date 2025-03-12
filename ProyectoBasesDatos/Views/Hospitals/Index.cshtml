@@ -1,0 +1,148 @@
+﻿@model IEnumerable<ProyectoBasesDatos.Models.Hospital>
+
+@{
+    ViewData["Title"] = "Gestión de Hospitales";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-hospital me-2"></i>Hospitales Registrados</h2>
+            <div>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i>Registrar Hospital
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filtro de búsqueda -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre, dirección o teléfono...">
+                        <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped" id="hospitalsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="sortable" data-sort="name">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-hospital-alt me-2"></i>
+                                    @Html.DisplayNameFor(model => model.HName)
+                                    <i class="fas fa-sort ms-1"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="address">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    @Html.DisplayNameFor(model => model.HAddress)
+                                    <i class="fas fa-sort ms-1"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="phone">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-phone me-2"></i>
+                                    @Html.DisplayNameFor(model => model.Phone)
+                                    <i class="fas fa-sort ms-1"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="text-center" style="width: 250px;">
+                                <i class="fas fa-cogs me-2"></i>Opciones Disponibles
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle">
+                                        <span class="fw-bold">@Html.DisplayFor(modelItem => item.HName)</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-muted"><i class="fas fa-map-pin me-1 text-secondary"></i>@Html.DisplayFor(modelItem => item.HAddress)</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="tel:@item.Phone" class="text-decoration-none">
+                                            <i class="fas fa-phone-alt me-1 text-success"></i>@Html.DisplayFor(modelItem => item.Phone)
+                                        </a>
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info text-white" data-bs-toggle="tooltip" title="Ver información completa">
+                                                <i class="fas fa-eye me-1"></i>  Detalles
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning text-white" data-bs-toggle="tooltip" title="Modificar información">
+                                                <i class="fas fa-edit me-1"></i> Editar
+                                            </a>
+   
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>No hay hospitales registrados en el sistema.
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted" id="totalRecords">Mostrando @Model.Count() hospitales</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Inicializar tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Filtro de búsqueda
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#hospitalsTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+                updateTotalRecords();
+            });
+
+            // Limpiar búsqueda
+            $("#clearSearch").click(function() {
+                $("#searchInput").val("");
+                $("#hospitalsTable tbody tr").show();
+                updateTotalRecords();
+            });
+
+            // Función para actualizar contador de registros
+            function updateTotalRecords() {
+                var visibleRows = $("#hospitalsTable tbody tr:visible").length;
+                $("#totalRecords").text("Mostrando " + visibleRows + " de " + @Model.Count() + " hospitales");
+            }
+        });
+    </script>
+}

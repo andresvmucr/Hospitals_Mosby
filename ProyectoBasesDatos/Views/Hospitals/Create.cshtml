@@ -1,0 +1,107 @@
+﻿@model ProyectoBasesDatos.Models.Hospital
+@{
+    ViewData["Title"] = "Registrar Hospital";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="fas fa-hospital me-2"></i>Registrar Nuevo Hospital</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" id="hospitalForm" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong><i class="fas fa-exclamation-triangle me-2"></i>Por favor corrija los siguientes errores:</strong>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Id" class="form-label fw-bold">Código Único</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
+                                <input asp-for="Id" class="form-control" required placeholder="Ingrese el código único del hospital" />
+                            </div>
+                            <span asp-validation-for="Id" class="text-danger"></span>
+                            <small class="form-text text-muted">Código único de identificación del hospital en el sistema.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="HName" class="form-label fw-bold">Nombre del Hospital</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-hospital-alt"></i></span>
+                                <input asp-for="HName" class="form-control" required maxlength="100" placeholder="Ingrese el nombre completo del hospital" />
+                            </div>
+                            <span asp-validation-for="HName" class="text-danger"></span>
+                            <div id="nameCounter" class="form-text">0/100 caracteres</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="HAddress" class="form-label fw-bold">Dirección</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <input asp-for="HAddress" class="form-control" required maxlength="200" placeholder="Ingrese la dirección completa" />
+                            </div>
+                            <span asp-validation-for="HAddress" class="text-danger"></span>
+                            <div id="addressCounter" class="form-text">0/200 caracteres</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label fw-bold">Teléfono de Contacto</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input asp-for="Phone" class="form-control phone-mask" required pattern="\d{10}"
+                                       placeholder="Ej: 9912345678" title="Debe ingresar 10 dígitos numéricos" />
+                            </div>
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                            <small class="form-text text-muted">Ingrese 10 dígitos sin espacios ni caracteres especiales.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                    </a>
+                    <div>
+                        <button type="reset" class="btn btn-outline-danger me-2">
+                            <i class="fas fa-eraser me-2"></i>Limpiar Formulario
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Registrar Hospital
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function() {
+            // Contador de caracteres para nombre
+            $("#HName").on("input", function() {
+                $("#nameCounter").text($(this).val().length + "/100 caracteres");
+            });
+
+            // Contador de caracteres para dirección
+            $("#HAddress").on("input", function() {
+                $("#addressCounter").text($(this).val().length + "/200 caracteres");
+            });
+
+            // Máscara para el teléfono
+            $(".phone-mask").on("input", function() {
+                $(this).val($(this).val().replace(/[^0-9]/g, "").substring(0, 10));
+            });
+        });
+    </script>
+}

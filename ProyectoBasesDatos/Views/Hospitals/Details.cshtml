@@ -1,0 +1,86 @@
+﻿@model ProyectoBasesDatos.Models.Hospital
+@{
+    ViewData["Title"] = "Detalles del Hospital";
+    var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
+
+    // Obtener inicial para avatar
+    string hospitalInitial = !string.IsNullOrEmpty(Model.HName) ? Model.HName.Substring(0, 1).ToUpper() : "H";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-hospital me-2"></i>Detalles del Hospital</h4>
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-light btn-sm me-2">
+                    <i class="fas fa-edit me-1"></i>Editar
+                </a>
+                <a asp-action="Index" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row">
+                <!-- Sección de información del hospital -->
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="user-avatar bg-info"
+                             style="width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            @hospitalInitial
+                        </div>
+                        <div class="ms-3">
+                            <h3 class="mb-0">@Model.HName</h3>
+                            <span class="badge bg-info">Hospital</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-info"><i class="fas fa-building me-2"></i>Información General</h5>
+                                    <hr>
+
+                                    <div class="mb-3">
+                                        <strong><i class="fas fa-map-marker-alt text-muted me-2"></i>Dirección:</strong>
+                                        <p class="mb-0">@(string.IsNullOrEmpty(Model.HAddress) ? "No disponible" : Model.HAddress)</p>
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <strong><i class="fas fa-phone text-muted me-2"></i>Teléfono:</strong>
+                                        <p class="mb-0">@(string.IsNullOrEmpty(Model.Phone) ? "No disponible" : Model.Phone)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de información del sistema -->
+                <div class="col-lg-4">
+                    <div class="card h-100 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-info"><i class="fas fa-cogs me-2"></i>Información del Sistema</h5>
+                            <hr>
+
+                            <div class="mb-3">
+                                <strong><i class="fas fa-fingerprint text-muted me-2"></i>ID del Hospital:</strong>
+                                <p class="mb-0">@Model.Id</p>
+                            </div>
+
+                            <!-- Información adicional que podría ser relevante -->
+                            <div class="mb-0">
+                                <strong><i class="fas fa-calendar-alt text-muted me-2"></i>Estado:</strong>
+                                <p class="mb-0">
+                                    <span class="badge bg-success">Activo</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

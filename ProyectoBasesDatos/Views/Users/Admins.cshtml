@@ -1,0 +1,166 @@
+﻿@model IEnumerable<ProyectoBasesDatos.Models.User>
+@{
+    ViewData["Title"] = "Sistema de Gestión de Usuarios";
+}
+
+<style>
+    .card-dashboard {
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+    }
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .role-admin {
+        background-color: #dc3545;
+    }
+
+    .role-doctor {
+        background-color: #007bff;
+    }
+
+    .role-nurse {
+        background-color: #28a745;
+    }
+
+    .role-patient {
+        background-color: #6c757d;
+    }
+
+    .role-default {
+        background-color: #17a2b8;
+    }
+
+    .action-buttons .btn {
+        margin: 0 2px;
+        min-width: 90px;
+    }
+
+        /* Estilo para botones con hover mejorado */
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <a asp-action="Create" class="btn btn-primary rounded-pill shadow">
+            <i class="fas fa-user-plus me-2"></i> Nuevo Usuario
+        </a>
+    </div>
+</div>
+
+<!-- Tabla de usuarios -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="usersTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0">Usuario</th>
+                                <th class="border-0">Contacto</th>
+                                <th class="border-0">Rol</th>
+                                <th class="border-0">Hospital</th>
+                                <th class="border-0 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                string avatarClass = item.Role == "Admin" ? "role-admin" :
+                                item.Role == "Doctor" ? "role-doctor" :
+                                item.Role == "Nurse" ? "role-nurse" :
+                                item.Role == "Patient" ? "role-patient" : "role-default";
+
+                                // Manejo seguro de valores potencialmente nulos
+                                string userName = !string.IsNullOrEmpty(item.UName) ? item.UName : "Usuario";
+                                string userInitial = !string.IsNullOrEmpty(item.UName) ? item.UName.Substring(0, 1).ToUpper() : "?";
+                                string firstLastName = !string.IsNullOrEmpty(item.Firstlastname) ? item.Firstlastname : "";
+                                string secondLastName = !string.IsNullOrEmpty(item.Secondlastname) ? item.Secondlastname : "";
+                                string fullLastName = (firstLastName + " " + secondLastName).Trim();
+                                string address = !string.IsNullOrEmpty(item.Address) ? (item.Address.Length > 20 ? item.Address.Substring(0, 20) + "..." : item.Address) : "No disponible";
+                                string phone = !string.IsNullOrEmpty(item.Phone) ? item.Phone : "No disponible";
+                                string role = !string.IsNullOrEmpty(item.Role) ? item.Role : "Sin rol";
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar @avatarClass">
+                                                @userInitial
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@userName</h6>
+                                                <small class="text-muted">@fullLastName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="fas fa-phone-alt text-muted me-2"></i>@phone
+                                        </div>
+                                        <small><i class="fas fa-map-marker-alt text-muted me-2"></i>@address</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(item.Role == "Admin" ? "bg-danger" : item.Role == "Doctor" ? "bg-primary" : item.Role == "Nurse" ? "bg-success" : "bg-secondary")">
+                                            @role
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Hospital != null)
+                                        {
+                                            <span class="d-inline-block text-truncate" style="max-width: 150px;">
+                                                <i class="fas fa-hospital text-muted me-1"></i>
+                                                Hospital #@item.Hospital.Id
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                <i class="fas fa-hospital-alt text-muted me-1"></i>
+                                                No asignado
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons d-flex justify-content-center">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i> Ver
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit me-1"></i> Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

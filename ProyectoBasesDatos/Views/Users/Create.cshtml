@@ -1,0 +1,160 @@
+﻿@model ProyectoBasesDatos.Models.User
+@{
+    ViewData["Title"] = "Crear Usuario";
+    var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="my-2"><i class="fas fa-user-plus me-2"></i>Crear Nuevo Usuario</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <!-- Información Personal -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-id-card me-2"></i>Información Personal</h5>
+
+                        <div class="mb-3">
+                            <label asp-for="Id" class="form-label">Identificación</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
+                                <input asp-for="Id" class="form-control" placeholder="Ingrese el ID" />
+                            </div>
+                            <span asp-validation-for="Id" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UName" class="form-label">Nombre de Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input asp-for="UName" class="form-control" placeholder="Nombre de usuario" />
+                            </div>
+                            <span asp-validation-for="UName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Firstlastname" class="form-label">Primer Apellido</label>
+                                <input asp-for="Firstlastname" class="form-control" placeholder="Primer apellido" />
+                                <span asp-validation-for="Firstlastname" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Secondlastname" class="form-label">Segundo Apellido</label>
+                                <input asp-for="Secondlastname" class="form-control" placeholder="Segundo apellido" />
+                                <span asp-validation-for="Secondlastname" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Birthdate" class="form-label">Fecha de Nacimiento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                    <input asp-for="Birthdate" class="form-control" type="date" />
+                                </div>
+                                <span asp-validation-for="Birthdate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Gender" class="form-label">Género</label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto y Rol -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-address-book me-2"></i>Contacto y Acceso</h5>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input asp-for="Password" class="form-control" type="password" placeholder="Contraseña" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <div class="form-text">La contraseña debe tener al menos 8 caracteres.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Dirección</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <input asp-for="Address" class="form-control" placeholder="Dirección completa" />
+                            </div>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Teléfono</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input asp-for="Phone" class="form-control" placeholder="Número de teléfono" />
+                            </div>
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="HospitalId" class="form-label">Hospital</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-hospital"></i></span>
+                                <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.HospitalId">
+                                    <option value="">-- Seleccionar Hospital --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Role" class="form-label">Rol</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                <select asp-for="Role" class="form-select">
+                                    <option value="">-- Seleccionar Rol --</option>
+                                    <option value="Admin">Administrador</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Patient">Paciente</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    @if (userRole.ToUpper() == "SUPERADMIN") {
+                        <a asp-controller="Users" asp-action="Admins" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                        </a>
+                    }
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Script para validación mejorada
+        $(document).ready(function () {
+            // Tooltip para campos con información adicional
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        console.log(userRol);
+    </script>
+}
