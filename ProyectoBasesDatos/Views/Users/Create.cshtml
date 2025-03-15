@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Crear Usuario";
     var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
+    var predefinedRole = ViewBag.PredefinedRole as string; // Capturamos el rol predefinido
 }
 
 <div class="container py-4">
@@ -112,33 +113,46 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Role" class="form-label">Rol</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
-                                @if (userRole == "superadmin") { 
-                                    <select asp-for="Role" class="form-select">
-                                        <option value="">-- Seleccionar Rol --</option>
-                                        <option value="admin">Administrador</option>
-                                        <option value="superadmin">Super administrador</option>
-                                    </select>
-                                } else {
-                                    <select asp-for="Role" class="form-select">
-                                        <option value="">-- Seleccionar Rol --</option>
-                                        <option value="Doctor">Doctor</option>
-                                        <option value="Patient">Paciente</option>
-                                    </select>
-                                }
+                        <!-- Campo de Rol (oculto si está predefinido) -->
+                        @if (string.IsNullOrEmpty(predefinedRole))
+                        {
+                            <div class="mb-3">
+                                <label asp-for="Role" class="form-label">Rol</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                    @if (userRole == "superadmin")
+                                    {
+                                        <select asp-for="Role" class="form-select">
+                                            <option value="">-- Seleccionar Rol --</option>
+                                            <option value="admin">Administrador</option>
+                                            <option value="superadmin">Super administrador</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select asp-for="Role" class="form-select">
+                                            <option value="">-- Seleccionar Rol --</option>
+                                            <option value="Doctor">Doctor</option>
+                                            <option value="Patient">Paciente</option>
+                                        </select>
+                                    }
+                                </div>
+                                <span asp-validation-for="Role" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="Role" class="text-danger"></span>
-                        </div>
+                        }
+                        else
+                        {
+                            <!-- Si el rol está predefinido, lo establecemos como un campo oculto -->
+                            <input type="hidden" asp-for="Role" value="@predefinedRole" />
+                        }
                     </div>
                 </div>
 
                 <hr class="my-4">
 
                 <div class="d-flex justify-content-between">
-                    @if (userRole.ToUpper() == "SUPERADMIN") {
+                    @if (userRole == "superadmin")
+                    {
                         <a asp-controller="Users" asp-action="Admins" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
                         </a>
@@ -162,6 +176,5 @@
             // Tooltip para campos con información adicional
             $('[data-toggle="tooltip"]').tooltip();
         });
-        console.log(userRol);
     </script>
 }

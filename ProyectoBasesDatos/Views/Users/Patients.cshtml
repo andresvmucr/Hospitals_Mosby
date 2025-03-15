@@ -1,0 +1,132 @@
+﻿@model IEnumerable<ProyectoBasesDatos.Models.User>
+@{
+    ViewData["Title"] = "Sistema de Gestión de Pacientes";
+}
+
+<style>
+    .card-dashboard {
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+    }
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+        background-color: #17a2b8;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .action-buttons .btn {
+        margin: 0 2px;
+        min-width: 90px;
+    }
+
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <a asp-action="Create" asp-route-role="patient" class="btn btn-primary rounded-pill shadow">
+            <i class="fas fa-user-plus me-2"></i> Nuevo Paciente
+        </a>
+    </div>
+</div>
+
+<!-- Tabla de pacientes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="patientsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0">Paciente</th>
+                                <th class="border-0">Contacto</th>
+                                <th class="border-0">Historial Médico</th>
+                                <th class="border-0">Hospital</th>
+                                <th class="border-0 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                // Manejo seguro de valores potencialmente nulos
+                                string patientName = !string.IsNullOrEmpty(item.UName) ? item.UName : "Paciente";
+                                string patientInitial = !string.IsNullOrEmpty(item.UName) ? item.UName.Substring(0, 1).ToUpper() : "?";
+                                string firstLastName = !string.IsNullOrEmpty(item.Firstlastname) ? item.Firstlastname : "";
+                                string secondLastName = !string.IsNullOrEmpty(item.Secondlastname) ? item.Secondlastname : "";
+                                string fullLastName = (firstLastName + " " + secondLastName).Trim();
+                                string phone = !string.IsNullOrEmpty(item.Phone) ? item.Phone : "No disponible";
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="patient-avatar">
+                                                @patientInitial
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@patientName</h6>
+                                                <small class="text-muted">@fullLastName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="fas fa-phone-alt text-muted me-2"></i>@phone
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (item.Hospital != null)
+                                        {
+                                            <span class="d-inline-block text-truncate" style="max-width: 150px;">
+                                                <i class="fas fa-hospital text-muted me-1"></i>
+                                                Hospital #@item.Hospital.Id
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                <i class="fas fa-hospital-alt text-muted me-1"></i>
+                                                No asignado
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons d-flex justify-content-center">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i> Ver
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit me-1"></i> Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -35,6 +35,30 @@ namespace ProyectoBasesDatos.Controllers
             return View(adminUsers);
         }
 
+        public async Task<IActionResult> Patients()
+        {
+
+            var hospitalId = HttpContext.Session.GetString("IdHospital");
+            Console.WriteLine("Hospital id:" + hospitalId);
+            var patientsUsers = await _context.Users
+           .Include(u => u.Hospital)
+           .Where(u => u.Role == "patient" && u.HospitalId == hospitalId)
+           .ToListAsync();
+
+            return View(patientsUsers);
+        }
+
+        public async Task<IActionResult> Doctors()
+        {
+            var hospitalId = HttpContext.Session.GetString("IdHospital");
+            var doctorsUsers = await _context.Users
+           .Include(u => u.Hospital)
+           .Where(u => u.Role == "doctor" && u.HospitalId == hospitalId)
+           .ToListAsync();
+
+            return View(doctorsUsers);
+        }
+
         // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -55,8 +79,13 @@ namespace ProyectoBasesDatos.Controllers
         }
 
         // GET: Users/Create
-        public IActionResult Create()
+        public IActionResult Create(string role)
         {
+            if (!string.IsNullOrEmpty(role))
+            {
+                ViewBag.PredefinedRole = role;
+            }
+
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id");
             return View();
         }
@@ -70,15 +99,19 @@ namespace ProyectoBasesDatos.Controllers
         {
             if (ModelState.IsValid)
             {
+                Console.WriteLine("UserRole: " + user.Role);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
 
                 if (user.Role == "admin")
                 {
                     return RedirectToAction(nameof(Admins));
-                } else
+                } else if(user.Role == "patient") {
+                    return RedirectToAction(nameof(Patients));
+                }
+                else
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Patients));
                 }
             }
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id", user.HospitalId);

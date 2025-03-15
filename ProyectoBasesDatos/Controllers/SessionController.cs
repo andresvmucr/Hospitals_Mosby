@@ -47,6 +47,7 @@ namespace ProyectoBasesDatos.Controllers
             {
                 return RedirectToAction("SuperAdminHome", "Home");
             } else if (user.Role == "admin") {
+                HttpContext.Session.SetString("IdHospital", user.HospitalId);
                 return RedirectToAction("AdminHome", "Home");
             }
 
