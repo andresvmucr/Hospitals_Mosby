@@ -51,17 +51,11 @@ namespace ProyectoBasesDatos.Controllers
         public async Task<IActionResult> Doctors()
         {
             var hospitalId = HttpContext.Session.GetString("IdHospital");
-
-            // Obtener los doctores con sus especialidades y horarios
-            var doctors = await _context.Doctors
-                .Include(d => d.Specialty) // Incluir la especialidad del doctor
-                .Include(d => d.WorkSchedules) // Incluir los horarios del doctor
-                .Include(d => d.User) // Incluir la relación con User
-                    .ThenInclude(u => u.Hospital) // Incluir el hospital del usuario
-                .Where(d => d.User.HospitalId == hospitalId && d.User.Role == "doctor")
-                .ToListAsync();
-
-            return View(doctors);
+            var doctorsUsers = await _context.Users
+           .Include(u => u.Hospital)
+           .Where(u => u.Role == "doctor" && u.HospitalId == hospitalId)
+           .ToListAsync();
+            return View(doctorsUsers);
         }
 
         // GET: Users/Details/5

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<ProyectoBasesDatos.Models.Medication>
+
+@{
+    ViewData["Title"] = "Medicinas";
+}
+
+<h2>Medicinas</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MName</td>
+                <td>@item.MDescription</td>
+                <td>@item.HospitalMeds?.Price.ToString("C")</td>
+                <td>@item.HospitalMeds?.Stock</td>
+            </tr>
+        }
+    </tbody>
+</table>
