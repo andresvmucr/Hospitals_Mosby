@@ -3,6 +3,8 @@
     ViewData["Title"] = "Crear Usuario";
     var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
     var predefinedRole = ViewBag.PredefinedRole as string; // Capturamos el rol predefinido
+    var isCreatingPatient = predefinedRole == "patient"; // Verificamos si se está creando un paciente
+    var hospitalId = ViewContext.HttpContext.Session.GetString("IdHospital"); // Obtenemos el ID del hospital desde la sesión
 }
 
 <div class="container py-4">
@@ -103,15 +105,24 @@
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="HospitalId" class="form-label">Hospital</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-hospital"></i></span>
-                                <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.HospitalId">
-                                    <option value="">-- Seleccionar Hospital --</option>
-                                </select>
+                        <!-- Campo de Hospital (oculto si es admin creando un paciente) -->
+                        @if (!(userRole == "admin" && isCreatingPatient))
+                        {
+                            <div class="mb-3">
+                                <label asp-for="HospitalId" class="form-label">Hospital</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-hospital"></i></span>
+                                    <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.HospitalId">
+                                        <option value="">-- Seleccionar Hospital --</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                            <!-- Si es admin creando un paciente, establecemos el hospital desde la sesión -->
+                            <input type="hidden" asp-for="HospitalId" value="@hospitalId" />
+                        }
 
                         <!-- Campo de Rol (oculto si está predefinido) -->
                         @if (string.IsNullOrEmpty(predefinedRole))

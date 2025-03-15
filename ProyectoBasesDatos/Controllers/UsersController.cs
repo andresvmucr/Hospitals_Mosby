@@ -51,12 +51,17 @@ namespace ProyectoBasesDatos.Controllers
         public async Task<IActionResult> Doctors()
         {
             var hospitalId = HttpContext.Session.GetString("IdHospital");
-            var doctorsUsers = await _context.Users
-           .Include(u => u.Hospital)
-           .Where(u => u.Role == "doctor" && u.HospitalId == hospitalId)
-           .ToListAsync();
 
-            return View(doctorsUsers);
+            // Obtener los doctores con sus especialidades y horarios
+            var doctors = await _context.Doctors
+                .Include(d => d.Specialty) // Incluir la especialidad del doctor
+                .Include(d => d.WorkSchedules) // Incluir los horarios del doctor
+                .Include(d => d.User) // Incluir la relación con User
+                    .ThenInclude(u => u.Hospital) // Incluir el hospital del usuario
+                .Where(d => d.User.HospitalId == hospitalId && d.User.Role == "doctor")
+                .ToListAsync();
+
+            return View(doctors);
         }
 
         // GET: Users/Details/5
@@ -148,28 +153,31 @@ namespace ProyectoBasesDatos.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            // Editing patient
+            if (user.Role == "patient")
             {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var patient = await _context.Users
+                    .Include(u => u.Hospital)
+                    .FirstOrDefaultAsync(m => m.Id == id);
+
+                // Update the tracked entity's properties
+                patient.UName = user.UName;
+                patient.Firstlastname = user.Firstlastname;
+                patient.Secondlastname = user.Secondlastname;
+                patient.Birthdate = user.Birthdate;
+                patient.Gender = user.Gender;
+                patient.Address = user.Address;
+                patient.Phone = user.Phone;
+                patient.HospitalId = user.HospitalId;
+                patient.Role = user.Role;
+
+                // Save changes
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Patients));
             }
-            ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id", user.HospitalId);
-            return View(user);
+            // Editing doctor
+            return RedirectToAction(nameof(Doctors));
+
         }
 
         // GET: Users/Delete/5

@@ -63,8 +63,7 @@
                             <tr>
                                 <th class="border-0">Paciente</th>
                                 <th class="border-0">Contacto</th>
-                                <th class="border-0">Historial Médico</th>
-                                <th class="border-0">Hospital</th>
+                                <th class="border-0">Dirección</th>
                                 <th class="border-0 text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -78,6 +77,7 @@
                                 string secondLastName = !string.IsNullOrEmpty(item.Secondlastname) ? item.Secondlastname : "";
                                 string fullLastName = (firstLastName + " " + secondLastName).Trim();
                                 string phone = !string.IsNullOrEmpty(item.Phone) ? item.Phone : "No disponible";
+								string address = !string.IsNullOrEmpty(item.Address) ? item.Address : "No disponible";
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -96,20 +96,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if (item.Hospital != null)
-                                        {
-                                            <span class="d-inline-block text-truncate" style="max-width: 150px;">
-                                                <i class="fas fa-hospital text-muted me-1"></i>
-                                                Hospital #@item.Hospital.Id
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">
-                                                <i class="fas fa-hospital-alt text-muted me-1"></i>
-                                                No asignado
-                                            </span>
-                                        }
+                                        <div>
+                                            <i class="fas fa-phone-alt text-muted me-2"></i>@address
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="action-buttons d-flex justify-content-center">

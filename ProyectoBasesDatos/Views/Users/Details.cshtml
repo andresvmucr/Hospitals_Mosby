@@ -14,16 +14,6 @@
         _ => Model.Gender
     };
 
-    // Determinar la clase de color para el rol
-    string rolClass = Model.Role switch
-    {
-        "Admin" => "bg-danger",
-        "Doctor" => "bg-primary",
-        "Nurse" => "bg-success",
-        "Patient" => "bg-secondary",
-        _ => "bg-info"
-    };
-
     // Obtener inicial para avatar
     string userInitial = !string.IsNullOrEmpty(Model.UName) ? Model.UName.Substring(0, 1).ToUpper() : "?";
 }
@@ -36,7 +26,7 @@
                 <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-light btn-sm me-2">
                     <i class="fas fa-edit me-1"></i>Editar
                 </a>
-                @if (userRole.ToUpper() == "SUPERADMIN")
+                @if (userRole == "superadmin")
                 {
                     <a asp-asp-controller="Users" asp-action="Admins" class="btn btn-outline-light btn-sm">
                         <i class="fas fa-arrow-left me-1"></i>Volver
@@ -50,13 +40,12 @@
                 <!-- Sección de información personal -->
                 <div class="col-lg-8">
                     <div class="d-flex align-items-center mb-4">
-                        <div class="user-avatar @($"bg-{(Model.Role == "Admin" ? "danger" : Model.Role == "Doctor" ? "primary" : Model.Role == "Nurse" ? "success" : "secondary")}")"
+                        <div class="user-avatar bg-secondary"
                              style="width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             @userInitial
                         </div>
                         <div class="ms-3">
                             <h3 class="mb-0">@nombreCompleto</h3>
-                            <span class="badge @rolClass">@Model.Role</span>
                         </div>
                     </div>
 
@@ -123,21 +112,12 @@
                                 <p class="mb-0">
                                     @if (Model.Hospital != null)
                                     {
-                                        <span>Hospital #@Model.Hospital.Id</span>
+                                        <span>@Model.Hospital.HName</span> <!-- Mostrar el nombre del hospital -->
                                     }
                                     else
                                     {
                                         <span class="text-muted">No asignado</span>
                                     }
-                                </p>
-                            </div>
-
-                            <!-- No mostrar la contraseña por motivos de seguridad -->
-                            <div class="mb-0">
-                                <strong><i class="fas fa-lock text-muted me-2"></i>Contraseña:</strong>
-                                <p class="mb-0">
-                                    <span class="text-muted">••••••••</span>
-                                    <span class="badge bg-warning text-dark ms-2">Protegida</span>
                                 </p>
                             </div>
                         </div>

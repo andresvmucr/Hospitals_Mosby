@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Editar Usuario";
     var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
+    var isEditingPatient = Model.Role == "patient"; // Verificar si el usuario es un paciente
+    var hospitalId = ViewContext.HttpContext.Session.GetString("IdHospital"); // Obtener el ID del hospital desde la sesión
 }
 
 <div class="container py-4">
@@ -62,19 +64,23 @@
                         </div>
                     </div>
 
-                    <!-- Información de Contacto y Rol -->
+                    <!-- Información de Contacto -->
                     <div class="col-lg-6">
-                        <h5 class="mb-3 text-primary"><i class="fas fa-address-book me-2"></i>Contacto y Acceso</h5>
+                        <h5 class="mb-3 text-primary"><i class="fas fa-address-book me-2"></i>Contacto</h5>
 
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label">Contraseña</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                <input asp-for="Password" class="form-control" type="password" placeholder="Contraseña" />
+                        <!-- Ocultar campo de contraseña si es un paciente -->
+                        @if (!isEditingPatient)
+                        {
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input asp-for="Password" class="form-control" type="password" placeholder="Contraseña" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <div class="form-text">Deje en blanco para mantener la contraseña actual.</div>
                             </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                            <div class="form-text">Deje en blanco para mantener la contraseña actual.</div>
-                        </div>
+                        }
 
                         <div class="mb-3">
                             <label asp-for="Address" class="form-label">Dirección</label>
@@ -94,37 +100,55 @@
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="HospitalId" class="form-label">Hospital</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-hospital"></i></span>
-                                <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.HospitalId">
-                                    <option value="">-- Seleccionar Hospital --</option>
-                                </select>
+                        <!-- Ocultar campo de hospital si es un paciente -->
+                        @if (!isEditingPatient)
+                        {
+                            <div class="mb-3">
+                                <label asp-for="HospitalId" class="form-label">Hospital</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-hospital"></i></span>
+                                    <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.HospitalId">
+                                        <option value="">-- Seleccionar Hospital --</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="HospitalId" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="HospitalId" class="text-danger"></span>
-                        </div>
+                        }
+                        else
+                        {
+                            <!-- Si es un paciente, establecer el hospital desde la sesión -->
+                            <input type="hidden" asp-for="HospitalId" value="@hospitalId" />
+                        }
 
-                        <div class="mb-3">
-                            <label asp-for="Role" class="form-label">Rol</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
-                                <select asp-for="Role" class="form-select">
-                                    <option value="">-- Seleccionar Rol --</option>
-                                    <option value="Admin">Administrador</option>
-                                    <option value="Doctor">Doctor</option>
-                                    <option value="Patient">Paciente</option>
-                                </select>
+                        <!-- Ocultar campo de rol si es un paciente -->
+                        @if (!isEditingPatient)
+                        {
+                            <div class="mb-3">
+                                <label asp-for="Role" class="form-label">Rol</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                    <select asp-for="Role" class="form-select">
+                                        <option value="">-- Seleccionar Rol --</option>
+                                        <option value="Admin">Administrador</option>
+                                        <option value="Doctor">Doctor</option>
+                                        <option value="Patient">Paciente</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="Role" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="Role" class="text-danger"></span>
-                        </div>
+                        }
+                        else
+                        {
+                            <!-- Si es un paciente, establecer el rol como oculto -->
+                            <input type="hidden" asp-for="Role" value="patient" />
+                        }
                     </div>
                 </div>
 
                 <hr class="my-4">
 
                 <div class="d-flex justify-content-between">
-                    @if (userRole.ToUpper() == "SUPERADMIN")
+                    @if (userRole == "superadmin")
                     {
                         <a asp-controller="Users" asp-action="Admins" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Volver a la Lista

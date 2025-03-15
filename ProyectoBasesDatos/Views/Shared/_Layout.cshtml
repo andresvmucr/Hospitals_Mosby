@@ -17,6 +17,9 @@
             @await Html.PartialAsync("_SuperAdminNavBar")
         } else if (userRole == "admin") {
             @await Html.PartialAsync("_AdminNavBar")
+        } else
+        {
+			@await Html.PartialAsync("_DefaultNavBar")
         }
     }
     <div class="container">
