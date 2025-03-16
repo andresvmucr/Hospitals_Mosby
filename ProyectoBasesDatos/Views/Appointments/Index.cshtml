@@ -1,0 +1,42 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Citas";
+}
+
+
+<div class="container">
+    <h2>Citas Programadas</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <a asp-action="Create" class="btn btn-primary rounded-pill shadow">
+                <i class="fas fa-user-plus me-2"></i> Nueva Cita
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID Cita</th>
+                <th>Fecha y Hora</th>
+                <th>Paciente</th>
+                <th>Doctor</th>
+                <th>Especialidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appointment in Model)
+            {
+                <tr>
+                    <td>@appointment.Appointment.Id</td>
+                    @* <td>@appointment.Appointment.ADay.ToString("dd/MM/yyyy HH:mm")</td> *@
+                    <td>@appointment.PatientFullName</td>
+                    <td>@appointment.DoctorFullName</td>
+                    <td>@appointment.SpecialtyName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

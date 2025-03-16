@@ -29,6 +29,8 @@ public partial class User
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
+    public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
+
     public virtual Hospital? Hospital { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();

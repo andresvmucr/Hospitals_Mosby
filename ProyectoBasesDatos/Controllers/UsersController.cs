@@ -50,11 +50,23 @@ namespace ProyectoBasesDatos.Controllers
 
         public async Task<IActionResult> Doctors()
         {
+
             var hospitalId = HttpContext.Session.GetString("IdHospital");
-            var doctorsUsers = await _context.Users
-           .Include(u => u.Hospital)
-           .Where(u => u.Role == "doctor" && u.HospitalId == hospitalId)
-           .ToListAsync();
+
+            // Imprimir en el log para verificación
+            Console.WriteLine($"Buscando doctores para hospital ID: {hospitalId}");
+
+            // Consulta corregida
+            var doctorsUsers = await _context.Doctors
+                .Include(d => d.IdDoctorNavigation.HospitalId)
+                .Include(d => d.IdDoctorNavigation.Doctors)
+                .Include(d => d.Specialty.SpeName)
+                .Where(d => d.IdDoctorNavigation.Role.ToLower() == "doctor" && d.IdDoctorNavigation.HospitalId == hospitalId)
+                .ToListAsync();
+
+            // Verificar resultados
+            Console.WriteLine($"Número de doctores encontrados: {doctorsUsers.Count}");
+
             return View(doctorsUsers);
         }
 
@@ -69,9 +81,37 @@ namespace ProyectoBasesDatos.Controllers
             var user = await _context.Users
                 .Include(u => u.Hospital)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (user.Role == "doctor")
+            {
+                var doctor = await _context.Doctors
+                    .Where(d => d.IdDoctor == id)
+                    .FirstOrDefaultAsync();
+
+                if (doctor != null)
+                {
+                    var specialty = await _context.Specialties
+                        .Where(s => s.Id == doctor.SpecialtyId)
+                        .ToListAsync();
+
+                    var workSchedule = await _context.WorkSchedules
+                        .Where(w => w.DoctorId == id)
+                        .Select(w => new
+                        {
+                            w.WDay,
+                            Starthour = w.Starthour.ToString("HH:mm"), // Formatear a HH:mm
+                            Endhour = w.Endhour.ToString("HH:mm")       // Formatear a HH:mm
+                        })
+                        .ToListAsync();
+
+                    ViewBag.Specialty = specialty;
+                    ViewBag.WorkSchedule = workSchedule;
+                }
             }
 
             return View(user);
@@ -85,6 +125,10 @@ namespace ProyectoBasesDatos.Controllers
                 ViewBag.PredefinedRole = role;
             }
 
+            if (role == "doctor")
+            {
+                ViewData["Specialties"] = new SelectList(_context.Specialties, "Id", "SpeName");
+            }
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id");
             return View();
         }
@@ -94,28 +138,61 @@ namespace ProyectoBasesDatos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UName,Firstlastname,Secondlastname,Birthdate,Password,Gender,Address,Phone,HospitalId,Role")] User user)
+        public async Task<IActionResult> Create(
+    [Bind("Id,UName,Firstlastname,Secondlastname,Birthdate,Password,Gender,Address,Phone,HospitalId,Role")] User user,
+    string Specialty, TimeSpan StartTime, TimeSpan EndTime, List<string> WorkingDays) // Recibe horario y días de trabajo
         {
             if (ModelState.IsValid)
             {
                 Console.WriteLine("UserRole: " + user.Role);
+                Console.WriteLine("Specialty: " + Specialty);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
 
                 if (user.Role == "admin")
                 {
                     return RedirectToAction(nameof(Admins));
-                } else if(user.Role == "patient") {
+                }
+                else if (user.Role == "patient")
+                {
                     return RedirectToAction(nameof(Patients));
+                }
+                else if (user.Role == "doctor")
+                {
+                    // Crear el registro del doctor
+                    var doctor = new Doctor
+                    {
+                        Id = user.Id,
+                        SpecialtyId = Specialty,
+                        IdDoctor = user.Id
+                    };
+                    _context.Add(doctor);
+                    await _context.SaveChangesAsync();
+
+
+                    foreach (var day in WorkingDays)
+                    {
+                        var doctorworkingday = new WorkSchedule
+                        {
+                            WDay = day,
+                            Starthour = DateTime.Today.Add(StartTime),
+                            Endhour = DateTime.Today.Add(EndTime),
+                            DoctorId = doctor.Id
+                        };
+                        _context.Add(doctorworkingday);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return RedirectToAction(nameof(Doctors));
                 }
                 else
                 {
                     return RedirectToAction(nameof(Patients));
                 }
             }
+
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "Id", "Id", user.HospitalId);
             return View(user);
-
         }
 
         // GET: Users/Edit/5

@@ -9,7 +9,11 @@ public partial class Doctor
 
     public string? SpecialtyId { get; set; }
 
+    public string? IdDoctor { get; set; }
+
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+    public virtual User? IdDoctorNavigation { get; set; }
 
     public virtual Specialty? Specialty { get; set; }
 

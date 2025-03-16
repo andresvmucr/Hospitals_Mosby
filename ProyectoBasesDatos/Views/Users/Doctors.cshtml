@@ -1,5 +1,151 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<dynamic>
 @{
+    ViewData["Title"] = "Sistema de Gestión de Doctores";
+}
+
+<style>
+    .card-dashboard {
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+    }
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .role-doctor {
+        background-color: #007bff;
+    }
+
+    .specialty-badge {
+        background-color: #6610f2;
+        color: white;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+    }
+
+    .action-buttons .btn {
+        margin: 0 2px;
+        min-width: 90px;
+    }
+
+        /* Estilo para botones con hover mejorado */
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2 class="mb-3">Doctores del Hospital</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a asp-controller="Users" asp-action="Create" asp-route-role="doctor" class="btn btn-primary rounded-pill shadow">
+            <i class="fas fa-user-md me-2"></i> Nuevo Doctor
+        </a>
+    </div>
+</div>
+
+<!-- Tabla de doctores -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="doctorsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0">Doctor</th>
+                                <th class="border-0">Contacto</th>
+                                <th class="border-0">Especialidad</th>
+                                <th class="border-0 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                // Manejo seguro de valores potencialmente nulos
+                                string userName = !string.IsNullOrEmpty(item.Doctor.UName) ? item.Doctor.UName : "Doctor";
+                                string userInitial = !string.IsNullOrEmpty(item.Doctor.UName) ? item.Doctor.UName.Substring(0, 1).ToUpper() : "?";
+                                string firstLastName = !string.IsNullOrEmpty(item.Doctor.Firstlastname) ? item.Doctor.Firstlastname : "";
+                                string secondLastName = !string.IsNullOrEmpty(item.Doctor.Secondlastname) ? item.Doctor.Secondlastname : "";
+                                string fullLastName = (firstLastName + " " + secondLastName).Trim();
+                                string address = !string.IsNullOrEmpty(item.Doctor.Address) ? (item.Doctor.Address.Length > 20 ? item.Doctor.Address.Substring(0, 20) + "..." : item.Doctor.Address) : "No disponible";
+                                string phone = !string.IsNullOrEmpty(item.Doctor.Phone) ? item.Doctor.Phone : "No disponible";
+                                string specialty = !string.IsNullOrEmpty(item.Specialty) ? item.Specialty : "No especificada";
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar role-doctor">
+                                                @userInitial
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">Dr. @userName</h6>
+                                                <small class="text-muted">@fullLastName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="fas fa-phone-alt text-muted me-2"></i>@phone
+                                        </div>
+                                        <small><i class="fas fa-map-marker-alt text-muted me-2"></i>@address</small>
+                                    </td>
+                                    <td>
+                                        <span class="specialty-badge">
+                                            <i class="fas fa-stethoscope me-1"></i>
+                                            @specialty
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons d-flex justify-content-center">
+                                            <a asp-action="Details" asp-route-id="@item.Doctor.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i> Ver
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#doctorsTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                },
+                responsive: true,
+                order: [[0, 'asc']]
+            });
+        });
+    </script>
 }

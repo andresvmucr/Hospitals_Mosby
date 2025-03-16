@@ -13,21 +13,37 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+
+            <!-- Campo MName -->
             <div class="form-group">
                 <label asp-for="MName" class="control-label"></label>
                 <input asp-for="MName" class="form-control" />
                 <span asp-validation-for="MName" class="text-danger"></span>
             </div>
+
+            <!-- Campo MDescription -->
             <div class="form-group">
                 <label asp-for="MDescription" class="control-label"></label>
                 <input asp-for="MDescription" class="form-control" />
                 <span asp-validation-for="MDescription" class="text-danger"></span>
             </div>
+
+            <!-- Campo Price -->
             <div class="form-group">
-                <label asp-for="HospitalMedsId" class="control-label"></label>
-                <select asp-for="HospitalMedsId" class="form-control" asp-items="ViewBag.HospitalMedsId"></select>
-                <span asp-validation-for="HospitalMedsId" class="text-danger"></span>
+                <label for="Price" class="control-label">Precio</label>
+                <input name="Price" class="form-control" type="number" step="0.01" value="@ViewBag.Price" />
+                <span class="text-danger"></span>
             </div>
+
+
+            <!-- Campo Stock -->
+            <div class="form-group">
+                <label for="Stock" class="control-label">Stock</label>
+                <input name="Stock" class="form-control" type="number" value="@ViewBag.Stock" />
+                <span class="text-danger"></span>
+            </div>
+
+            <!-- Botón de guardar -->
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -35,10 +51,13 @@
     </div>
 </div>
 
+<!-- Enlace para volver a la lista -->
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

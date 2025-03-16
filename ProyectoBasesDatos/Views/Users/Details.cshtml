@@ -88,6 +88,69 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Sección de especialidad y horario de trabajo -->
+                    @if (Model.Role == "doctor")
+                    {
+                        <!-- Diccionario para traducir los días de la semana -->
+                        var diasSemana = new Dictionary<string, string>
+                    {
+                    { "Monday", "Lunes" },
+                    { "Tuesday", "Martes" },
+                    { "Wednesday", "Miércoles" },
+                    { "Thursday", "Jueves" },
+                    { "Friday", "Viernes" },
+                    { "Saturday", "Sábado" },
+                    { "Sunday", "Domingo" }
+                    };
+
+                        <div class="row g-4 mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary"><i class="fas fa-stethoscope me-2"></i>Especialidad</h5>
+                                        <hr>
+                                        @if (ViewBag.Specialty != null)
+                                        {
+                                            foreach (var specialty in ViewBag.Specialty)
+                                            {
+                                                <p class="mb-0">@specialty.SpeName</p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-0 text-muted">No disponible</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card h-100 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary"><i class="fas fa-calendar-alt me-2"></i>Horario de Trabajo</h5>
+                                        <hr>
+                                        @if (ViewBag.WorkSchedule != null)
+                                        {
+                                            foreach (var schedule in ViewBag.WorkSchedule)
+                                            {
+                                                <!-- Traducir el día de la semana -->
+                                                var diaEnEspanol = diasSemana.ContainsKey(schedule.WDay)
+                                                ? diasSemana[schedule.WDay]
+                                                : schedule.WDay;
+
+                                                <p class="mb-0">@diaEnEspanol: @schedule.Starthour - @schedule.Endhour</p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-0 text-muted">No disponible</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 <!-- Sección de información del sistema -->

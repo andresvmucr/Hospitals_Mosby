@@ -37,7 +37,7 @@ public partial class dbContext : DbContext
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__appointm__3213E83F3942FEE1");
+            entity.HasKey(e => e.Id).HasName("PK__appointm__3213E83F51E73BCE");
 
             entity.ToTable("appointments");
 
@@ -72,16 +72,23 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Doctor>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__doctors__3213E83FEF790778");
+            entity.HasKey(e => e.Id).HasName("PK__doctors__3213E83F1FCC24BA");
 
             entity.ToTable("doctors");
 
             entity.Property(e => e.Id)
                 .HasMaxLength(9)
                 .HasColumnName("id");
+            entity.Property(e => e.IdDoctor)
+                .HasMaxLength(9)
+                .HasColumnName("id_doctor");
             entity.Property(e => e.SpecialtyId)
                 .HasMaxLength(30)
                 .HasColumnName("specialty_id");
+
+            entity.HasOne(d => d.IdDoctorNavigation).WithMany(p => p.Doctors)
+                .HasForeignKey(d => d.IdDoctor)
+                .HasConstraintName("FK__doctors__id_doct__5CD6CB2B");
 
             entity.HasOne(d => d.Specialty).WithMany(p => p.Doctors)
                 .HasForeignKey(d => d.SpecialtyId)
@@ -90,7 +97,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Hospital>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hospital__3213E83F6018F53F");
+            entity.HasKey(e => e.Id).HasName("PK__hospital__3213E83FF6BFEF8C");
 
             entity.ToTable("hospitals");
 
@@ -110,7 +117,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<HospitalMed>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hospital__3213E83FE15C54EC");
+            entity.HasKey(e => e.Id).HasName("PK__hospital__3213E83FEA83127C");
 
             entity.ToTable("hospital_meds");
 
@@ -133,7 +140,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Medication>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__medicati__3213E83FD20A04F3");
+            entity.HasKey(e => e.Id).HasName("PK__medicati__3213E83FE95774F0");
 
             entity.ToTable("medications");
 
@@ -158,7 +165,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__payments__3213E83F1814350A");
+            entity.HasKey(e => e.Id).HasName("PK__payments__3213E83F91AC1B56");
 
             entity.ToTable("payments");
 
@@ -192,7 +199,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Specialty>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__specialt__3213E83F19B91FB3");
+            entity.HasKey(e => e.Id).HasName("PK__specialt__3213E83FEDB497EB");
 
             entity.ToTable("specialties");
 
@@ -209,7 +216,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<Treatment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__treatmen__3213E83F3155779F");
+            entity.HasKey(e => e.Id).HasName("PK__treatmen__3213E83F00C9CCDB");
 
             entity.ToTable("treatments");
 
@@ -231,7 +238,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<TreatmentMed>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__treatmen__3213E83F53C75086");
+            entity.HasKey(e => e.Id).HasName("PK__treatmen__3213E83FD78F6824");
 
             entity.ToTable("treatment_meds");
 
@@ -265,7 +272,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F44A13846");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83FA3C8E8F8");
 
             entity.ToTable("users");
 
@@ -310,7 +317,7 @@ public partial class dbContext : DbContext
 
         modelBuilder.Entity<WorkSchedule>(entity =>
         {
-            entity.HasKey(e => new { e.WDay, e.DoctorId, e.Starthour }).HasName("PK__work_sch__7E880220B1CF8EF3");
+            entity.HasKey(e => new { e.WDay, e.DoctorId, e.Starthour }).HasName("PK__work_sch__7E880220B7E29E5D");
 
             entity.ToTable("work_schedules");
 

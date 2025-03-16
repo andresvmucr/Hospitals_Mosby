@@ -41,8 +41,9 @@ namespace ProyectoBasesDatos.Controllers
             }
 
             var medication = await _context.Medications
-                .Include(m => m.HospitalMeds)
+                .Include(m => m.HospitalMeds) // Incluir la relación con HospitalMeds
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (medication == null)
             {
                 return NotFound();
@@ -88,31 +89,36 @@ namespace ProyectoBasesDatos.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,MName,MDescription")] Medication medication, // Datos de Medication
-                                                decimal price, // Precio desde el formulario
+                                                int price, // Precio desde el formulario
                                                 int stock) // Stock desde el formulario
         {
-            if (ModelState.IsValid)
+            Console.WriteLine("Id: " + medication.Id);
+            Console.WriteLine("MName: " + medication.MName);
+            Console.WriteLine("MDescription: " + medication.MDescription);
+            Console.WriteLine("Price: " + price);
+            Console.WriteLine("Stock: " + stock);
+           
+            // Crear la entidad HospitalMeds
+            var hospitalMedId = HttpContext.Session.GetString("IdHospital") + "_" + medication.Id;
+            var hospitalMeds = new HospitalMed
             {
-                // Crear la entidad HospitalMeds
-                var hospitalMeds = new HospitalMed
-                {
-                    Id = medication.Id, // Usar el mismo ID que Medication
-                    Price = price,
-                    Stock = stock,
-                    HospitalId = HttpContext.Session.GetString("IdHospital") // Obtener el hospitalId de la sesión
-                };
+                Id = hospitalMedId,
+                Price = price,
+                Stock = stock,
+                HospitalId = HttpContext.Session.GetString("IdHospital") // Obtener el hospitalId de la sesión
+            };
 
-                // Asignar HospitalMedsId a Medication
-                medication.HospitalMedsId = hospitalMeds.Id;
+            // Asignar HospitalMedsId a Medication
+            medication.HospitalMedsId = hospitalMeds.Id;
 
-                // Guardar ambas entidades en la base de datos
-                _context.Add(hospitalMeds);
-                _context.Add(medication);
-                await _context.SaveChangesAsync();
+            // Guardar ambas entidades en la base de datos
+            _context.Add(hospitalMeds);
+            await _context.SaveChangesAsync();
+            _context.Add(medication);
+            await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
-            }
-            return View(medication);
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Medications/Edit/5
@@ -123,12 +129,20 @@ namespace ProyectoBasesDatos.Controllers
                 return NotFound();
             }
 
-            var medication = await _context.Medications.FindAsync(id);
+            // Obtener el medicamento y sus datos relacionados (HospitalMeds)
+            var medication = await _context.Medications
+                .Include(m => m.HospitalMeds) // Incluir la relación con HospitalMeds
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (medication == null)
             {
                 return NotFound();
             }
-            ViewData["HospitalMedsId"] = new SelectList(_context.HospitalMeds, "Id", "Id", medication.HospitalMedsId);
+
+            // Pasar los datos a la vista
+            ViewBag.Price = medication.HospitalMeds.Price; // Precio
+            ViewBag.Stock = medication.HospitalMeds.Stock; // Stock
+
             return View(medication);
         }
 
@@ -137,70 +151,55 @@ namespace ProyectoBasesDatos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,MName,MDescription,HospitalMedsId")] Medication medication)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,MName,MDescription")] Medication medication, int price, int stock)
         {
             if (id != medication.Id)
             {
                 return NotFound();
             }
+            Console.WriteLine("Id: " + medication.Id);
+            Console.WriteLine("MName: " + medication.MName);
+            Console.WriteLine("MDescription: " + medication.MDescription);
+            Console.WriteLine("Price: " + price);
+            Console.WriteLine("Stock: " + stock);
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                // Obtener el medicamento existente y sus datos relacionados
+                var existingMedication = await _context.Medications
+                    .Include(m => m.HospitalMeds)
+                    .FirstOrDefaultAsync(m => m.Id == id);
+
+                // Actualizar los campos del medicamento
+                existingMedication.MName = medication.MName;
+                existingMedication.MDescription = medication.MDescription;
+
+                // Actualizar los campos de HospitalMeds
+                if (existingMedication.HospitalMeds != null)
                 {
-                    _context.Update(medication);
-                    await _context.SaveChangesAsync();
+                    existingMedication.HospitalMeds.Price = price;
+                    existingMedication.HospitalMeds.Stock = stock;
+                    _context.Update(existingMedication.HospitalMeds);
+                    await _context.SaveChangesAsync();// Guardar los cambios en la base de datos
                 }
-                catch (DbUpdateConcurrencyException)
+
+                _context.Update(existingMedication);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MedicationExists(medication.Id))
                 {
-                    if (!MedicationExists(medication.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+                else
+                {
+                    throw;
+                }
             }
-            ViewData["HospitalMedsId"] = new SelectList(_context.HospitalMeds, "Id", "Id", medication.HospitalMedsId);
-            return View(medication);
-        }
-
-        // GET: Medications/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var medication = await _context.Medications
-                .Include(m => m.HospitalMeds)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (medication == null)
-            {
-                return NotFound();
-            }
-
-            return View(medication);
-        }
-
-        // POST: Medications/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var medication = await _context.Medications.FindAsync(id);
-            if (medication != null)
-            {
-                _context.Medications.Remove(medication);
-            }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool MedicationExists(string id)
         {

@@ -4,6 +4,7 @@
     var userRole = ViewContext.HttpContext.Session.GetString("Role") ?? "";
     var predefinedRole = ViewBag.PredefinedRole as string; // Capturamos el rol predefinido
     var isCreatingPatient = predefinedRole == "patient"; // Verificamos si se está creando un paciente
+    var isCreatingDoctor = predefinedRole == "doctor"; // Verificamos si se está creando un doctor
     var hospitalId = ViewContext.HttpContext.Session.GetString("IdHospital"); // Obtenemos el ID del hospital desde la sesión
 }
 
@@ -105,8 +106,8 @@
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
-                        <!-- Campo de Hospital (oculto si es admin creando un paciente) -->
-                        @if (!(userRole == "admin" && isCreatingPatient))
+                        <!-- Campo de Hospital (visible solo para admin y no predefinido como doctor o paciente) -->
+                        @if (userRole == "admin" && !isCreatingDoctor && !isCreatingPatient)
                         {
                             <div class="mb-3">
                                 <label asp-for="HospitalId" class="form-label">Hospital</label>
@@ -120,8 +121,61 @@
                         }
                         else
                         {
-                            <!-- Si es admin creando un paciente, establecemos el hospital desde la sesión -->
+                            <!-- Si no es admin o está creando un doctor/paciente, establecemos el hospital desde la sesión -->
                             <input type="hidden" asp-for="HospitalId" value="@hospitalId" />
+                        }
+
+                        <!-- Campo de Especialidad (solo para doctores) -->
+                        @if (isCreatingDoctor)
+                        {
+                            <div class="mb-3">
+                                <label for="Specialty" class="form-label">Especialidad</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                                    <select id="Specialty" name="Specialty" class="form-select" asp-items="ViewBag.Specialties">
+                                        <option value="">-- Seleccionar Especialidad --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Inputs para el horario de trabajo (siempre visibles) -->
+                            <div class="mb-3">
+                                <label for="WorkingHours" class="form-label">Horario de Trabajo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                    <input type="time" id="StartTime" name="StartTime" class="form-control" placeholder="Hora de inicio" required>
+                                    <input type="time" id="EndTime" name="EndTime" class="form-control" placeholder="Hora de fin" required>
+                                </div>
+                            </div>
+
+                            <!-- Checkboxes para los días de trabajo -->
+                            <div class="mb-3">
+                                <label class="form-label">Días de Trabajo</label>
+                                <div>
+                                    @{
+                                        // Diccionario para mapear días en inglés (valor) a días en español (etiqueta)
+                                        var daysOfWeek = new Dictionary<string, string>
+                                        {
+                                        { "Monday", "Lunes" },
+                                        { "Tuesday", "Martes" },
+                                        { "Wednesday", "Miércoles" },
+                                        { "Thursday", "Jueves" },
+                                        { "Friday", "Viernes" },
+                                        { "Saturday", "Sábado" },
+                                        { "Sunday", "Domingo" }
+                                        };
+
+                                        // Recorrer el diccionario para generar los checkboxes
+                                        foreach (var day in daysOfWeek)
+                                        {
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="@day.Key" name="WorkingDays" value="@day.Key">
+                                                <label class="form-check-label" for="@day.Key">@day.Value</label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
                         }
 
                         <!-- Campo de Rol (oculto si está predefinido) -->
@@ -143,8 +197,8 @@
                                     {
                                         <select asp-for="Role" class="form-select">
                                             <option value="">-- Seleccionar Rol --</option>
-                                            <option value="Doctor">Doctor</option>
-                                            <option value="Patient">Paciente</option>
+                                            <option value="doctor">Doctor</option>
+                                            <option value="patient">Paciente</option>
                                         </select>
                                     }
                                 </div>
@@ -178,14 +232,14 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script>
-        // Script para validación mejorada
-        $(document).ready(function () {
-            // Tooltip para campos con información adicional
-            $('[data-toggle="tooltip"]').tooltip();
+        document.getElementById('HasWorkingHours').addEventListener('change', function () {
+            var workingHoursSection = document.getElementById('WorkingHoursSection');
+            if (this.checked) {
+                workingHoursSection.style.display = 'block';
+            } else {
+                workingHoursSection.style.display = 'none';
+            }
         });
     </script>
 }

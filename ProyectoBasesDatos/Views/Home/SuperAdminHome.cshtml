@@ -69,7 +69,7 @@
                 <div class="card-body text-center p-4">
                     <h5 class="card-title fw-bold mb-3">Administradores</h5>
                     <p class="card-text">Control total sobre usuarios con privilegios administrativos en la plataforma.</p>
-                    <a href="@Url.Action("Admins", "Users")" class="btn btn-light rounded-pill px-4 mt-3">
+                    <a asp-controller="Users" asp-action="Admins" class="btn btn-light rounded-pill px-4 mt-3">
                         <i class="bi bi-gear-fill me-2"></i>Administrar
                     </a>
                 </div>
@@ -85,7 +85,7 @@
                 <div class="card-body text-center p-4">
                     <h5 class="card-title fw-bold mb-3">Especialidades</h5>
                     <p class="card-text">Configuración de especialidades médicas disponibles para los profesionales.</p>
-                    <a href="@Url.Action("Index", "Specialties")" class="btn btn-light rounded-pill px-4 mt-3">
+                    <a asp-controller="Specialties" asp-action="Index"  class="btn btn-light rounded-pill px-4 mt-3">
                         <i class="bi bi-gear-fill me-2"></i>Administrar
                     </a>
                 </div>
@@ -101,7 +101,7 @@
                 <div class="card-body text-center p-4">
                     <h5 class="card-title fw-bold mb-3">Hospitales</h5>
                     <p class="card-text">Gestión de centros médicos y hospitales afiliados en todo el país.</p>
-                    <a href="@Url.Action("Index", "Hospitals")" class="btn btn-light rounded-pill px-4 mt-3">
+                    <a asp-controller="Hospitals" asp-action="Index" class="btn btn-light rounded-pill px-4 mt-3">
                         <i class="bi bi-gear-fill me-2"></i>Administrar
                     </a>
                 </div>

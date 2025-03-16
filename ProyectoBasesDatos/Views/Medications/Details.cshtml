@@ -10,27 +10,42 @@
     <h4>Medication</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MName)
+
+        <!-- Campo MName -->
+        <dt class="col-sm-2">
+            Nombre:
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MDescription)
+
+        <!-- Campo MDescription -->
+        <dt class="col-sm-2">
+            Descripción:
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MDescription)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HospitalMeds)
+
+        <!-- Campo Price (desde HospitalMeds) -->
+        <dt class="col-sm-2">
+            Precio
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HospitalMeds.Id)
+        <dd class="col-sm-10">
+            @(Model.HospitalMeds?.Price.ToString("0.00"))
         </dd>
+
+        <!-- Campo Stock (desde HospitalMeds) -->
+        <dt class="col-sm-2">
+            Stock
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.HospitalMeds?.Stock)
+        </dd>
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
     <a asp-action="Index">Back to List</a>
 </div>
