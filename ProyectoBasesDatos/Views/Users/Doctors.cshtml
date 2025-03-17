@@ -86,14 +86,14 @@
                             @foreach (var item in Model)
                             {
                                 // Manejo seguro de valores potencialmente nulos
-                                string userName = !string.IsNullOrEmpty(item.Doctor.UName) ? item.Doctor.UName : "Doctor";
-                                string userInitial = !string.IsNullOrEmpty(item.Doctor.UName) ? item.Doctor.UName.Substring(0, 1).ToUpper() : "?";
-                                string firstLastName = !string.IsNullOrEmpty(item.Doctor.Firstlastname) ? item.Doctor.Firstlastname : "";
-                                string secondLastName = !string.IsNullOrEmpty(item.Doctor.Secondlastname) ? item.Doctor.Secondlastname : "";
+                                string userName = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.UName) ? item.Doctor.IdDoctorNavigation.UName : "Doctor";
+                                string userInitial = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.UName) ? item.Doctor.IdDoctorNavigation.UName.Substring(0, 1).ToUpper() : "?";
+                                string firstLastName = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.Firstlastname) ? item.Doctor.IdDoctorNavigation.Firstlastname : "";
+                                string secondLastName = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.Secondlastname) ? item.Doctor.IdDoctorNavigation.Secondlastname : "";
                                 string fullLastName = (firstLastName + " " + secondLastName).Trim();
-                                string address = !string.IsNullOrEmpty(item.Doctor.Address) ? (item.Doctor.Address.Length > 20 ? item.Doctor.Address.Substring(0, 20) + "..." : item.Doctor.Address) : "No disponible";
-                                string phone = !string.IsNullOrEmpty(item.Doctor.Phone) ? item.Doctor.Phone : "No disponible";
-                                string specialty = !string.IsNullOrEmpty(item.Specialty) ? item.Specialty : "No especificada";
+                                string address = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.Address) ? (item.Doctor.IdDoctorNavigation.Address.Length > 20 ? item.Doctor.IdDoctorNavigation.Address.Substring(0, 20) + "..." : item.Doctor.IdDoctorNavigation.Address) : "No disponible";
+                                string phone = !string.IsNullOrEmpty(item.Doctor.IdDoctorNavigation.Phone) ? item.Doctor.IdDoctorNavigation.Phone : "No disponible";
+                                string specialty = item.SpecialtyName; // Usamos el nombre de la especialidad ya manejado en la consulta
 
                                 <tr>
                                     <td>

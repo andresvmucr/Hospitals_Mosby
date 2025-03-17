@@ -50,7 +50,6 @@ namespace ProyectoBasesDatos.Controllers
 
         public async Task<IActionResult> Doctors()
         {
-
             var hospitalId = HttpContext.Session.GetString("IdHospital");
 
             // Imprimir en el log para verificación
@@ -58,10 +57,14 @@ namespace ProyectoBasesDatos.Controllers
 
             // Consulta corregida
             var doctorsUsers = await _context.Doctors
-                .Include(d => d.IdDoctorNavigation.HospitalId)
-                .Include(d => d.IdDoctorNavigation.Doctors)
-                .Include(d => d.Specialty.SpeName)
+                .Include(d => d.IdDoctorNavigation) // Include the entire navigation property
+                .Include(d => d.Specialty) // Include Specialty (not its scalar properties)
                 .Where(d => d.IdDoctorNavigation.Role.ToLower() == "doctor" && d.IdDoctorNavigation.HospitalId == hospitalId)
+                .Select(d => new
+                {
+                    Doctor = d,
+                    SpecialtyName = d.Specialty != null ? d.Specialty.SpeName : "No especificada"
+                })
                 .ToListAsync();
 
             // Verificar resultados

@@ -8,7 +8,7 @@
     <h2>Citas Programadas</h2>
     <div class="row mb-4">
         <div class="col-md-6">
-            <a asp-action="Create" class="btn btn-primary rounded-pill shadow">
+            <a asp-controller="Appointments" asp-action="Create" class="btn btn-primary rounded-pill shadow">
                 <i class="fas fa-user-plus me-2"></i> Nueva Cita
             </a>
         </div>
@@ -51,16 +51,17 @@
                     </td>
                     <td>
                         @{
-                            // Calcular el precio total de los tratamientos
-                            decimal totalPrice = appointment.Treatments.Sum(t => t.Price);
+                            decimal totalPrice = appointment.Treatments?.Sum(t => t.Price) ?? 0;
+                            // Depuración: Verificar el valor de totalPrice
+                            System.Diagnostics.Debug.WriteLine($"Total Price: {totalPrice}");
                         }
-                        @if (appointment.AStatus == "Completed")
+                        @if (appointment.AStatus == "Completed" && totalPrice > 0)
                         {
-                            <span>@totalPrice.ToString("C")</span> <!-- Mostrar el precio total formateado como moneda -->
+                            <span>@totalPrice.ToString("C")</span>
                         }
                         else
                         {
-                            <span>-</span> <!-- Mostrar un guion si no hay precio -->
+                            <span>-</span>
                         }
                     </td>
                     <td>

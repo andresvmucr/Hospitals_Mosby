@@ -35,8 +35,22 @@ namespace ProyectoBasesDatos.Controllers
         // GET: Treatments
         public async Task<IActionResult> Index()
         {
-            var dbContext = _context.Treatments.Include(t => t.Appointment);
-            return View(await dbContext.ToListAsync());
+            var hospitalId = HttpContext.Session.GetString("IdHospital");
+
+            if (string.IsNullOrEmpty(hospitalId))
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            var treatments = await _context.Treatments
+                .Include(t => t.Appointment)
+                    .ThenInclude(a => a.Doctor)  // Include the related Doctor entity
+                .Include(t => t.Appointment)
+                    .ThenInclude(a => a.Patient) // Include the related Patient entity
+                .Where(t => t.Appointment.Id.StartsWith(hospitalId))
+                .ToListAsync();
+
+            return View(treatments);
         }
 
         // GET: Treatments/Details/5
@@ -60,23 +74,23 @@ namespace ProyectoBasesDatos.Controllers
 
         public async Task<string> GenerateTreatmentID()
         {
-            var tratamientos = await _context.Treatments
+            var treatments = await _context.Treatments
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
             var nextID = 0;
 
-            if (tratamientos != null)
+            if (treatments != null)
             {
-                string lastID = tratamientos.Id;
-                string number = lastID.Substring(3);
+                string lastID = treatments.Id;
+                string number = lastID.Substring(11);
                 if (int.TryParse(number, out int lastNumber))
                 {
                     nextID = lastNumber + 1;
                 }
-
             }
 
-            string newId = $"TRM{nextID:D3}";
+            var hospId = HttpContext.Session.GetString("IdHospital");
+            string newId = $"{hospId}_TRM{nextID:D3}";
             return newId;
         }
 

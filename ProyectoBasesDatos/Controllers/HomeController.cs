@@ -47,11 +47,12 @@ public class HomeController : Controller
     {
         var id = HttpContext.Session.GetString("Id");
         var appointments = await _context.Appointments
-            .Include(a => a.Doctor)
-                .ThenInclude(d => d.IdDoctorNavigation)
-            .Include(c => c.Patient)
-            .Where(c => c.PatientId == id)
-            .ToListAsync();
+        .Include(a => a.Doctor)
+            .ThenInclude(d => d.IdDoctorNavigation)
+        .Include(c => c.Patient)
+        .Include(a => a.Treatments) // Asegúrate de incluir los tratamientos
+        .Where(c => c.PatientId == id)
+        .ToListAsync();
 
         return View(appointments);
     }

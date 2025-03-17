@@ -93,7 +93,7 @@ namespace ProyectoBasesDatos.Controllers
             try
             {
                 Console.WriteLine("Consultando para: " + specialtyId);
-                var hospitalId = "H000"; // Obtén el ID del hospital desde la sesión o donde corresponda
+                var hospitalId = "HOSP000"; // Obtén el ID del hospital desde la sesión o donde corresponda
                 var users = await _context.Users.ToListAsync();
                 var doctores = await _context.Doctors
                     .Where(d => d.SpecialtyId == specialtyId && d.IdDoctorNavigation.HospitalId == hospitalId)
