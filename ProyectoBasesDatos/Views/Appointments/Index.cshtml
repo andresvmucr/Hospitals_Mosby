@@ -20,7 +20,8 @@
         <thead>
             <tr>
                 <th>ID Cita</th>
-                <th>Fecha y Hora</th>
+                <th>Fecha </th>
+                <th>Hora </h>
                 <th>Paciente</th>
                 <th>Doctor</th>
                 <th>Especialidad</th>
@@ -31,7 +32,8 @@
             {
                 <tr>
                     <td>@appointment.Appointment.Id</td>
-                    @* <td>@appointment.Appointment.ADay.ToString("dd/MM/yyyy HH:mm")</td> *@
+                    <td>@appointment.Appointment.ADay</td>
+                    <td>@appointment.Appointment.AHour.ToString("HH:mm")</td>
                     <td>@appointment.PatientFullName</td>
                     <td>@appointment.DoctorFullName</td>
                     <td>@appointment.SpecialtyName</td>

@@ -11,38 +11,26 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ADay)
+            Día
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ADay)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AHour)
+           Hora
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AHour)
+            @Model.AHour.ToString("HH:mm")
         </dd>
+
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AStatus)
+            Paciente
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AStatus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Patient)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Patient.Id)
+            @($"{Model.Patient.UName} {Model.Patient.Firstlastname} {Model.Patient.Secondlastname}")
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Home" asp-action="DoctorHome">Back to List</a>
 </div>

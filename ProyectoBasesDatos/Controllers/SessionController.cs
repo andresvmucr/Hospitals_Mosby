@@ -52,12 +52,24 @@ namespace ProyectoBasesDatos.Controllers
             if (user.Role == "superadmin")
             {
                 return RedirectToAction("SuperAdminHome", "Home");
-            } else if (user.Role == "admin") {
+            } 
+            else
+            {
                 HttpContext.Session.SetString("IdHospital", user.HospitalId);
-                return RedirectToAction("AdminHome", "Home");
+                if (user.Role == "admin")
+                {
+                    return RedirectToAction("AdminHome", "Home");
+                }
+                else if (user.Role == "doctor")
+                {
+                    return RedirectToAction("DoctorHome", "Home");
+                }
+                else if (user.Role == "patient")
+                {
+                    return RedirectToAction("PatientHome", "Home");
+                }
             }
-
-                return View();
+            return View();
         }
     }
 }

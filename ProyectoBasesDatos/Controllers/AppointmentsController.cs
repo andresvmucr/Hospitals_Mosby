@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
@@ -19,6 +20,14 @@ namespace ProyectoBasesDatos.Controllers
         public AppointmentsController(dbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("Appointments/Perform/{id}")]
+        public async Task<IActionResult> Perform(string id)
+        {
+            ViewBag.Id = id;
+            Console.WriteLine("ViewBag:" + id);
+            return View();
         }
 
         public async Task<IActionResult> Index()
@@ -188,7 +197,7 @@ namespace ProyectoBasesDatos.Controllers
             return View(appointment);
         }
 
-        
+
 
         // GET: Appointments/Create
         public async Task<IActionResult> Create()
@@ -303,44 +312,93 @@ namespace ProyectoBasesDatos.Controllers
             return View(appointment);
         }
 
-        // GET: Appointments/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        [HttpPost]
+        public async Task<IActionResult> Cancel(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var appointment = await _context.Appointments
-                .Include(a => a.Doctor)
-                .Include(a => a.Patient)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
             {
                 return NotFound();
             }
 
-            return View(appointment);
+            appointment.AStatus = "Canceled";
+            _context.Update(appointment);
+            await _context.SaveChangesAsync();
+            if (HttpContext.Session.GetString("Role") == "admin")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("PatientHome", "Home");
+
+            }
         }
 
-        // POST: Appointments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        [HttpPost]
+        public async Task<IActionResult> Pay(string id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment != null)
+
+
+            var treatment = await _context.Treatments
+                .FirstOrDefaultAsync(t => t.AppointmentId == appointment.Id);
+
+            var nextId = await GenerateNextID();
+            var pay = new Payment
             {
-                _context.Appointments.Remove(appointment);
+                Id = nextId,
+                PDate = DateOnly.FromDateTime(DateTime.Now),
+                Price = treatment == null ? 0 : treatment.Price, // Operador ternario
+                PaymentMethod = "Tarjeta",
+                PatientId = appointment.PatientId,
+                AppointmentId = appointment.Id
+            };
+
+            Console.WriteLine("ID " + pay.Id);
+            Console.WriteLine("PDate " + pay.PDate);
+            Console.WriteLine("Price " + pay.Price);
+            Console.WriteLine("PatientId " + pay.PatientId);
+            Console.WriteLine("AppointmentId " + pay.AppointmentId);
+
+            _context.Add(pay);
+            await _context.SaveChangesAsync();
+
+            appointment.AStatus = "Paid";
+            _context.Update(appointment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("PatientHome", "Home");
+        }
+
+        public async Task<string> GenerateNextID()
+        {
+            var pay = await _context.Payments
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+            var nextID = 0;
+            if (pay != null)
+            {
+                string lastID = pay.Id;
+                if (lastID.Contains("PAY"))
+                {
+                    string number = lastID.Substring(3);
+                    if (int.TryParse(number, out int lastNumber))
+                    {
+                        nextID = lastNumber + 1;
+                    }
+                }
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            string newId = $"PAY{nextID:D3}";
+            return newId;
         }
 
         private bool AppointmentExists(string id)
         {
             return _context.Appointments.Any(e => e.Id == id);
         }
+
     }
-}
+    
+ }

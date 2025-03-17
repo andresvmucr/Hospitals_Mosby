@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ProyectoBasesDatos.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     @{
@@ -17,7 +20,12 @@
             @await Html.PartialAsync("_SuperAdminNavBar")
         } else if (userRole == "admin") {
             @await Html.PartialAsync("_AdminNavBar")
-        } else
+        } else if (userRole == "doctor") {
+            @await Html.PartialAsync("_DoctorNavBar")
+        } else if (userRole == "patient") {
+            @await Html.PartialAsync("_PatientNavBar")
+        }
+        else
         {
 			@await Html.PartialAsync("_DefaultNavBar")
         }

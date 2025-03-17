@@ -1,0 +1,204 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Atender cita";
+    var id = ViewBag.id;
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<div class="container py-4">
+    <div class="card shadow border-0 rounded-lg">
+        <div class="card-header bg-gradient-primary p-4">
+            <h1 class="h3 text-primary mb-1">Atender cita</h1>
+            <p class="text-muted mb-0">Complete los detalles del tratamiento para la cita</p>
+        </div>
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form asp-controller="Treatments" asp-action="Create" method="post" class="needs-validation" novalidate onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input type="hidden" name="AppointmentId" value="@id" />
+
+                <div id="medicationsContainer" class="mb-4">
+                    <div class="medication-group mb-3 p-3 border rounded bg-light">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Medicamentos</label>
+                                <select name="TreatmentMeds[0]" class="form-select shadow-sm" required>
+                                    <option value="">-- Seleccione un medicamento --</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, seleccione un medicamento</div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Cantidad</label>
+                                <input type="number" name="Quantity[0]" class="form-control shadow-sm" min="1" required placeholder="Ejemplo: 2">
+                                <div class="invalid-feedback">Introduzca una cantidad válida</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Frecuencia</label>
+                                <input type="text" name="Frequency[0]" class="form-control shadow-sm" required placeholder="Ejemplo: Cada 8 horas">
+                                <div class="invalid-feedback">Especifique la frecuencia</div>
+                            </div>
+
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-danger btn-delete w-100">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <button type="button" id="addMedication" class="btn btn-outline-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Añadir medicamento
+                    </button>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="form-group d-flex justify-content-between align-items-center">
+                    <a href="/Home/DoctorHome" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-check-circle me-2"></i>Finalizar cita
+                    </button>
+                </div>
+                <p></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const id = "@id"; // ID de la cita
+            const medicationsContainer = document.getElementById("medicationsContainer");
+            const btnAddMedication = document.getElementById("addMedication");
+
+            // Función para cargar los medicamentos en un select
+            function loadMedications(select) {
+                const url = `/Appointments/Perform/${id}/GetMeds`;
+                select.disabled = true;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        select.innerHTML = '<option value="">-- Seleccione un medicamento --</option>';
+                        data.forEach(med => {
+                            const option = document.createElement("option");
+                            option.value = med.id;
+                            option.textContent = med.medName;
+                            select.appendChild(option);
+                        });
+                        select.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error("Error loading medications:", error);
+                        select.innerHTML = '<option value="">Error al cargar medicamentos</option>';
+                        select.disabled = false;
+                    });
+            }
+
+            // Función para actualizar los índices de los grupos de medicamentos
+            function updateIndexes() {
+                document.querySelectorAll(".medication-group").forEach((group, index) => {
+                    group.querySelector("select").name = `TreatmentMeds[${index}]`;
+                    group.querySelector("input[type='number']").name = `Quantity[${index}]`;
+                    group.querySelector("input[type='text']").name = `Frequency[${index}]`;
+                });
+            }
+
+            // Evento para agregar un nuevo grupo de medicamentos
+            btnAddMedication.addEventListener("click", function () {
+                const firstGroup = medicationsContainer.firstElementChild;
+                if (!firstGroup) return;
+
+                const newGroup = firstGroup.cloneNode(true);
+                newGroup.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+                // Limpiar valores del nuevo grupo
+                newGroup.querySelector("select").selectedIndex = 0;
+                newGroup.querySelector("input[type='number']").value = "";
+                newGroup.querySelector("input[type='text']").value = "";
+
+                medicationsContainer.appendChild(newGroup);
+                updateIndexes();
+                loadMedications(newGroup.querySelector("select"));
+            });
+
+            // Evento para eliminar un grupo de medicamentos
+            medicationsContainer.addEventListener("click", function (e) {
+                if (e.target.closest(".btn-delete")) {
+                    const deletedGroup = e.target.closest(".medication-group");
+
+                    if (document.querySelectorAll(".medication-group").length > 1) {
+                        deletedGroup.style.transition = "opacity 0.3s ease";
+                        deletedGroup.style.opacity = "0";
+                        setTimeout(() => {
+                            deletedGroup.remove();
+                            updateIndexes();
+                        }, 300);
+                    }
+                }
+            });
+
+            // Cargar medicamentos en el primer select al iniciar la página
+            const firstSelect = medicationsContainer.querySelector("select");
+            if (firstSelect) {
+                loadMedications(firstSelect);
+            }
+        });
+
+        // Función de validación del formulario
+        function validateForm() {
+            const medicationGroups = document.querySelectorAll(".medication-group");
+            if (medicationGroups.length === 0) {
+                return false;
+            }
+
+            let isValid = true;
+            medicationGroups.forEach(group => {
+                const select = group.querySelector("select");
+                const quantity = group.querySelector("input[type='number']");
+                const frequency = group.querySelector("input[type='text']");
+
+                if (!select.value) {
+                    select.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    select.classList.remove("is-invalid");
+                }
+
+                if (!quantity.value || quantity.value < 1) {
+                    quantity.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    quantity.classList.remove("is-invalid");
+                }
+
+                if (!frequency.value.trim()) {
+                    frequency.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    frequency.classList.remove("is-invalid");
+                }
+            });
+
+            return isValid;
+        }
+    </script>
+}
