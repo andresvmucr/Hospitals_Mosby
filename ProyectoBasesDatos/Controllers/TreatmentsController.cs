@@ -37,6 +37,7 @@ namespace ProyectoBasesDatos.Controllers
         {
             var hospitalId = HttpContext.Session.GetString("IdHospital");
 
+            Console.WriteLine("Buscando tratamientos para " + hospitalId);
             if (string.IsNullOrEmpty(hospitalId))
             {
                 return RedirectToAction("Error", "Home");
@@ -47,7 +48,7 @@ namespace ProyectoBasesDatos.Controllers
                     .ThenInclude(a => a.Doctor)  // Include the related Doctor entity
                 .Include(t => t.Appointment)
                     .ThenInclude(a => a.Patient) // Include the related Patient entity
-                .Where(t => t.Appointment.Id.StartsWith(hospitalId))
+                .Where(t => t.Id.StartsWith(hospitalId))
                 .ToListAsync();
 
             return View(treatments);
@@ -78,10 +79,10 @@ namespace ProyectoBasesDatos.Controllers
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
             var nextID = 0;
-
             if (treatments != null)
             {
                 string lastID = treatments.Id;
+                Console.WriteLine("LAST ID: " + lastID);
                 string number = lastID.Substring(11);
                 if (int.TryParse(number, out int lastNumber))
                 {

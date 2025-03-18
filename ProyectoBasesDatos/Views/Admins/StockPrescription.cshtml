@@ -1,0 +1,221 @@
+﻿﻿@{
+    ViewData["Title"] = "Inventario y Prescripciones";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-12 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">Inventario y Prescripciones</h1>
+                </div>
+                <div class="card-body">
+                    <div id="errorMessage" class="alert alert-danger d-none mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i><span id="errorText"></span>
+                    </div>
+
+                    <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="inventario-tab" data-bs-toggle="tab" data-bs-target="#inventario" type="button" role="tab" aria-controls="inventario" aria-selected="true">
+                                <i class="fas fa-pills me-2"></i>Inventario de Medicamentos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="prescripciones-tab" data-bs-toggle="tab" data-bs-target="#prescripciones" type="button" role="tab" aria-controls="prescripciones" aria-selected="false">
+                                <i class="fas fa-prescription me-2"></i>Prescripciones (Últimos 30 días)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+
+                        <div class="tab-pane fade show active" id="inventario" role="tabpanel" aria-labelledby="inventario-tab">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <input type="text" id="buscarInventario" class="form-control form-control-sm me-2" placeholder="Buscar medicamento...">
+                                    <span class="text-muted small">Total: <span id="totalMedicamentos">0</span> medicamentos</span>
+                                </div>
+                            </div>
+
+                            <div id="alertaInventarioBajo" class="alert alert-warning d-none mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Hay <strong><span id="cantidadInventarioBajo">0</span> medicamentos</strong> con inventario bajo (menos de 10 unidades).
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="tablaInventario" class="table table-hover table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th>Precio</th>
+                                            <th>Disponible</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="noInventario" class="alert alert-info d-none">
+                                <i class="fas fa-info-circle me-2"></i>No hay medicamentos registrados en el inventario para este hospital.
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="prescripciones" role="tabpanel" aria-labelledby="prescripciones-tab">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <input type="text" id="buscarPrescripcion" class="form-control form-control-sm me-2" placeholder="Buscar prescripción...">
+                                    <span class="text-muted small">Total: <span id="totalPrescripciones">0</span> prescripciones</span>
+                                </div>
+
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="tablaPrescripciones" class="table table-hover table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Medicamento</th>
+                                            <th>Dosis</th>
+                                            <th>Frecuencia</th>
+                                            <th>Fecha</th>
+                                            <th>Precio</th>
+                                            <th>Paciente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <div id="noPrescripciones" class="alert alert-info d-none">
+                                <i class="fas fa-info-circle me-2"></i>No hay prescripciones registradas en los últimos 30 días para este hospital.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" id="idHospital" value="@ViewData["IdHospital"]" />
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+            // Obtener el ID del hospital del campo oculto
+            var idHospital = $("#idHospital").val();
+
+            $.ajax({
+                url: "@Url.Action("InventarioPrescripcion", "Administradores")",
+                type: "POST",
+                data: { idHospital: idHospital },
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.success) {
+                        let inventarioData = response.inventario || [];
+                        let prescripcionesData = response.prescripciones || [];
+
+                        $("#totalMedicamentos").text(inventarioData.length);
+                        $("#totalPrescripciones").text(prescripcionesData.length);
+
+                        $("#tablaInventario tbody").empty();
+                        $("#tablaPrescripciones tbody").empty();
+
+                        if (inventarioData.length > 0) {
+                            let medicamentosBajoInventario = 0;
+
+                            inventarioData.forEach(function (item) {
+                                if (item.cantidadDisponible < 10) {
+                                    medicamentosBajoInventario++;
+                                }
+
+                                let rowClass = '';
+                                let estadoClass = 'badge bg-success';
+                                let estadoText = 'Disponible';
+
+                                if (item.cantidadDisponible <= 0) {
+                                    rowClass = 'table-danger';
+                                    estadoClass = 'badge bg-danger';
+                                    estadoText = 'Agotado';
+                                } else if (item.cantidadDisponible < 10) {
+                                    rowClass = 'table-warning';
+                                    estadoClass = 'badge bg-warning text-dark';
+                                    estadoText = 'Bajo inventario';
+                                }
+
+                                $("#tablaInventario tbody").append(
+                                    `<tr class="${rowClass}">
+                                        <td>${item.idMedicamento}</td>
+                                        <td>${item.nombreMedicamento}</td>
+                                        <td>${item.descripcionMedicamento || '-'}</td>
+                                        <td>${formatCurrency(item.precioMedicamento)}</td>
+                                        <td class="text-center">${item.cantidadDisponible}</td>
+                                        <td><span class="${estadoClass}">${estadoText}</span></td>
+                                    </tr>`
+                                );
+                            });
+
+                            if (medicamentosBajoInventario > 0) {
+                                $("#cantidadInventarioBajo").text(medicamentosBajoInventario);
+                                $("#alertaInventarioBajo").removeClass("d-none");
+                            } else {
+                                $("#alertaInventarioBajo").addClass("d-none");
+                            }
+                        } else {
+                            $("#noInventario").removeClass("d-none");
+                        }
+
+                        if (prescripcionesData.length > 0) {
+                            prescripcionesData.forEach(function (item) {
+                                $("#tablaPrescripciones tbody").append(
+                                    `<tr>
+                                        <td>${item.idPrescripcion}</td>
+                                        <td>${item.nombreMedicamento}</td>
+                                        <td>${item.dosis}</td>
+                                        <td>${item.frecuencia}</td>
+                                        <td>${formatDate(item.fechaPrescripcion)}</td>
+                                        <td>${formatCurrency(item.precioTratamiento)}</td>
+                                        <td>${formatNombreCompleto(item.nombrePaciente, item.primerApellidoPaciente, item.segundoApellidoPaciente)}</td>
+                                    </tr>`
+                                );
+                            });
+                        } else {
+                            $("#noPrescripciones").removeClass("d-none");
+                        }
+                    } else {
+                        mostrarError(response.message || "No se pudieron obtener los datos del hospital.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", status, error);
+                    mostrarError("Ocurrió un error al procesar la solicitud. Inténtelo de nuevo más tarde.");
+                }
+            });
+
+            function mostrarError(mensaje) {
+                $("#errorText").text(mensaje);
+                $("#errorMessage").removeClass("d-none");
+            }
+
+            function formatNombreCompleto(nombre, apellido1, apellido2) {
+                return `${nombre || ''} ${apellido1 || ''} ${apellido2 || ''}`.trim();
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString("es-ES", { year: 'numeric', month: '2-digit', day: '2-digit' });
+            }
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat("es-CR", { style: "currency", currency: "CRC" }).format(amount);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,249 @@
+﻿﻿@{
+    ViewData["Title"] = "Calcular Total de Pagos por Paciente";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Calcular Total de Pagos por Paciente</h1>
+                </div>
+                <div class="card-body">
+                    <form id="formCalcularPagos" class="mb-4">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="cedulaPaciente" class="form-label">Cédula del Paciente</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" class="form-control" id="cedulaPaciente" name="cedulaPaciente" placeholder="Ingrese la cédula del paciente" maxlength="9" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 col-md-4 mx-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <span id="loadingSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                <i class="fas fa-calculator me-2"></i>Calcular
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="errorMessage" class="alert alert-danger d-none mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i><span id="errorText"></span>
+                    </div>
+
+                    <div id="resultadosContainer" class="d-none">
+                        <h2 class="h4 mb-3 border-bottom pb-2">Resultados del Cálculo</h2>
+
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle fa-2x me-3"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-1"><strong>Período de consulta:</strong> <span id="periodoConsulta"></span></p>
+                                    <p class="mb-0"><strong>Paciente:</strong> <span id="nombrePaciente">-</span> (<span id="cedulaResumen"></span>)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-muted mb-2">Total Pagado</h5>
+                                        <p class="display-6 text-primary fw-bold mb-0" id="totalPagado"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-muted mb-2">Cantidad de Pagos</h5>
+                                        <p class="display-6 text-primary fw-bold mb-0" id="cantidadPagos"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h3 class="h5 mb-0"><i class="fas fa-list me-2"></i>Detalle de Pagos</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0" id="tablaResultados">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Cédula</th>
+                                            <th class="text-end">Total Pagado</th>
+                                            <th class="text-center">Cantidad de Pagos</th>
+                                            <th class="text-end">Promedio por Pago</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-outline-primary me-2" id="btnImprimir">
+                                <i class="fas fa-print me-2"></i>Imprimir
+                            </button>
+                            <button class="btn btn-outline-success" id="btnExportar">
+                                <i class="fas fa-file-excel me-2"></i>Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="noResultados" class="alert alert-warning d-none mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>No se encontraron pagos para el paciente en el período seleccionado.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Validación de la cédula del paciente - solo números y máximo 9 dígitos
+            document.getElementById('cedulaPaciente').addEventListener('input', function (event) {
+                this.value = this.value.replace(/[^0-9]/g, ''); // Solo permite números
+                if (this.value.length > 9) {
+                    this.value = this.value.slice(0, 9); // Limita a 9 dígitos
+                }
+            });
+
+            // Establecer fecha fin como hoy por defecto
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            $("#fechaFin").val(formattedDate);
+
+            // Establecer fecha inicio como primer día del mes actual por defecto
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const formattedFirstDay = firstDay.toISOString().split('T')[0];
+            $("#fechaInicio").val(formattedFirstDay);
+
+            $("#formCalcularPagos").submit(function (e) {
+                e.preventDefault();
+
+                var cedulaPaciente = $("#cedulaPaciente").val();
+                var fechaInicio = $("#fechaInicio").val();
+                var fechaFin = $("#fechaFin").val();
+
+                // Validaciones
+                if (!cedulaPaciente) {
+                    mostrarError("Por favor, ingrese la cédula del paciente.");
+                    return;
+                }
+
+                if (!fechaInicio || !fechaFin) {
+                    mostrarError("Por favor, ingrese ambas fechas.");
+                    return;
+                }
+
+                // Validar que fecha fin no sea menor a fecha inicio
+                if (new Date(fechaFin) < new Date(fechaInicio)) {
+                    mostrarError("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                    return;
+                }
+
+                $("#loadingSpinner").removeClass("d-none");
+                $("#resultadosContainer").addClass("d-none");
+                $("#noResultados").addClass("d-none");
+                $("#errorMessage").addClass("d-none");
+
+                $.ajax({
+                    url: "@Url.Action("TotalPagos", "Administradores")",
+                    type: "POST",
+                    data: {
+                        cedulaPaciente: cedulaPaciente,
+                        fechaInicio: fechaInicio,
+                        fechaFin: fechaFin
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $("#loadingSpinner").addClass("d-none");
+
+                        if (response.success) {
+                            if (response.data && response.data.cantidadPagos > 0) {
+                                $("#resultadosContainer").removeClass("d-none");
+
+                                $("#periodoConsulta").text(`${formatDateToSpanish(fechaInicio)} al ${formatDateToSpanish(fechaFin)}`);
+                                $("#cedulaResumen").text(response.data.cedulaPaciente);
+                                if (response.data.nombrePaciente) {
+                                    $("#nombrePaciente").text(response.data.nombrePaciente);
+                                }
+
+                                $("#totalPagado").text(formatCurrency(response.data.totalPagos));
+                                $("#cantidadPagos").text(response.data.cantidadPagos);
+
+                                $("#tablaResultados tbody").empty();
+
+                                const promedioPago = response.data.totalPagos / response.data.cantidadPagos;
+
+                                $("#tablaResultados tbody").append(
+                                    `<tr>
+                                        <td>${response.data.cedulaPaciente}</td>
+                                        <td class="text-end fw-bold">${formatCurrency(response.data.totalPagos)}</td>
+                                        <td class="text-center">${response.data.cantidadPagos}</td>
+                                        <td class="text-end">${formatCurrency(promedioPago)}</td>
+                                    </tr>`
+                                );
+                            } else {
+                                $("#noResultados").removeClass("d-none");
+                            }
+                        } else {
+                            mostrarError(response.message || "Error al procesar la solicitud.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error en la solicitud AJAX:", status, error);
+
+                        $("#loadingSpinner").addClass("d-none");
+
+                        mostrarError("Ocurrió un error al procesar la solicitud. Inténtelo de nuevo más tarde.");
+                    }
+                });
+            });
+
+            // Función para mostrar errores
+            function mostrarError(mensaje) {
+                $("#errorText").text(mensaje);
+                $("#errorMessage").removeClass("d-none");
+                $('html, body').animate({
+                    scrollTop: $("#errorMessage").offset().top - 100
+                }, 200);
+            }
+
+            // Función para formatear fechas al estilo español
+            function formatDateToSpanish(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString("es-ES", { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+
+            // Función para formatear montos como moneda
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat("es-CR", { style: "currency", currency: "CRC" }).format(amount);
+            }
+        });
+    </script>
+}
