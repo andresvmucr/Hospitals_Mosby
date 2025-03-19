@@ -145,23 +145,23 @@
             $("#formCalcularPagos").submit(function (e) {
                 e.preventDefault();
 
-                var cedulaPaciente = $("#cedulaPaciente").val();
-                var fechaInicio = $("#fechaInicio").val();
-                var fechaFin = $("#fechaFin").val();
+                var patientId = $("#cedulaPaciente").val();
+                var startDate = $("#fechaInicio").val();
+                var endDate = $("#fechaFin").val();
 
                 // Validaciones
-                if (!cedulaPaciente) {
+                if (!patientId) {
                     mostrarError("Por favor, ingrese la cédula del paciente.");
                     return;
                 }
 
-                if (!fechaInicio || !fechaFin) {
+                if (!startDate || !endDate) {
                     mostrarError("Por favor, ingrese ambas fechas.");
                     return;
                 }
 
                 // Validar que fecha fin no sea menor a fecha inicio
-                if (new Date(fechaFin) < new Date(fechaInicio)) {
+                if (new Date(endDate) < new Date(startDate)) {
                     mostrarError("La fecha de fin no puede ser anterior a la fecha de inicio.");
                     return;
                 }
@@ -172,40 +172,41 @@
                 $("#errorMessage").addClass("d-none");
 
                 $.ajax({
-                    url: "@Url.Action("TotalPagos", "Administradores")",
+                    url: "@Url.Action("TotalPayment", "Admins")",
                     type: "POST",
                     data: {
-                        cedulaPaciente: cedulaPaciente,
-                        fechaInicio: fechaInicio,
-                        fechaFin: fechaFin
+                        patientId: patientId,
+                        startDate: startDate,
+                        endDate: endDate
                     },
                     success: function (response) {
                         console.log(response);
                         $("#loadingSpinner").addClass("d-none");
 
                         if (response.success) {
-                            if (response.data && response.data.cantidadPagos > 0) {
+                            if (response.payments && response.payments.paymentAmount > 0) {
                                 $("#resultadosContainer").removeClass("d-none");
 
                                 $("#periodoConsulta").text(`${formatDateToSpanish(fechaInicio)} al ${formatDateToSpanish(fechaFin)}`);
-                                $("#cedulaResumen").text(response.data.cedulaPaciente);
-                                if (response.data.nombrePaciente) {
-                                    $("#nombrePaciente").text(response.data.nombrePaciente);
+                                console.log("Patient id: " + response.payments.patientId);
+                                $("#cedulaResumen").text(response.payments.patientId);
+                                if (response.payments.patientName) {
+                                    $("#nombrePaciente").text(response.payments.patientName);
                                 }
 
-                                $("#totalPagado").text(formatCurrency(response.data.totalPagos));
-                                $("#cantidadPagos").text(response.data.cantidadPagos);
+                                $("#totalPagado").text(formatCurrency(response.payments.totalPayments));
+                                $("#cantidadPagos").text(response.payments.paymentAmount);
 
                                 $("#tablaResultados tbody").empty();
 
-                                const promedioPago = response.data.totalPagos / response.data.cantidadPagos;
+                                const paymentAverage = response.payments.totalPayments / response.payments.paymentAmount;
 
                                 $("#tablaResultados tbody").append(
                                     `<tr>
-                                        <td>${response.data.cedulaPaciente}</td>
-                                        <td class="text-end fw-bold">${formatCurrency(response.data.totalPagos)}</td>
-                                        <td class="text-center">${response.data.cantidadPagos}</td>
-                                        <td class="text-end">${formatCurrency(promedioPago)}</td>
+                                        <td>${response.payments.patientId}</td>
+                                        <td class="text-end fw-bold">${formatCurrency(response.payments.totalPayments)}</td>
+                                        <td class="text-center">${response.payments.paymentAmount}</td>
+                                        <td class="text-end">${formatCurrency(paymentAverage)}</td>
                                     </tr>`
                                 );
                             } else {

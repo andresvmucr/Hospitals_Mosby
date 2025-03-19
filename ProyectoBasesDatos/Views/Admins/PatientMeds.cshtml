@@ -178,9 +178,9 @@
             $("#formPacientesPorMedico").submit(function (e) {
                 e.preventDefault();
 
-                var cedulaDoctor = $("#cedulaDoctor").val();
-                var fechaInicio = $("#fechaInicio").val();
-                var fechaFin = $("#fechaFin").val();
+                var doctorId = $("#cedulaDoctor").val();
+                var startDate = $("#fechaInicio").val();
+                var endDate = $("#fechaFin").val();
 
                 $("#tablaPacientes tbody").html(`
                     <tr>
@@ -194,31 +194,30 @@
                 `);
 
                 $.ajax({
-                    url: "@Url.Action("ObtenerPacientesPorMedico", "Administradores")",
+                    url: "@Url.Action("GetPatients", "Admins")",
                     type: "POST",
-                    data: { cedulaDoctor: cedulaDoctor, fechaInicio: fechaInicio, fechaFin: fechaFin },
+                    data: { doctorId: doctorId, startDate: startDate, endDate: endDate },
                     success: function (response) {
-                        console.log(response);
 
                         $("#tablaPacientes tbody").empty();
 
-                        if (response.success && response.pacientes.length > 0) {
-                            $("#totalPacientes").text(response.pacientes.length + " pacientes");
+                        if (response.success && response.patients.length > 0) {
+                            $("#totalPacientes").text(response.patients.length + " pacientes");
                             $("#resultadosInfo").removeClass("d-none");
 
-                            response.pacientes.forEach(function (item) {
-                                const fechaNacimiento = new Date(item.fechaNacimientoPaciente).toLocaleDateString();
-                                const fechaCita = new Date(item.fechaCita).toLocaleDateString();
-                                const horaCita = formatearHora(item.horaCita);
+                            response.patients.forEach(function (item) {
+                                const fechaNacimiento = new Date(item.patientBirthdate).toLocaleDateString();
+                                const fechaCita = new Date(item.appointmentDay).toLocaleDateString();
+                                const horaCita = formatearHora(item.appointmentHour);
 
                                 $("#tablaPacientes tbody").append(`
                                     <tr>
-                                        <td class="ps-4 fw-medium">${item.cedulaPaciente}</td>
-                                        <td>${item.nombrePaciente} ${item.primerApellidoPaciente} ${item.segundoApellidoPaciente}</td>
-                                        <td>${item.direccionPaciente}</td>
+                                        <td class="ps-4 fw-medium">${item.patientId}</td>
+                                        <td>${item.patientName} ${item.patientFirstLastName} ${item.patientSecondLastName}</td>
+                                        <td>${item.patientAddress}</td>
                                         <td>
-                                            <span class="badge ${item.generoPaciente.toUpperCase()  === 'M' ? 'bg-primary' : 'bg-danger'} bg-opacity-10 text-${item.generoPaciente.toUpperCase() === 'M' ? 'primary' : 'danger'} px-3 py-2">
-                                                ${item.generoPaciente.toUpperCase() === 'M' ? 'Masculino' : 'Femenino'}
+                                            <span class="badge ${item.patientGender.toUpperCase()  === 'M' ? 'bg-primary' : 'bg-danger'} bg-opacity-10 text-${item.patientGender.toUpperCase() === 'M' ? 'primary' : 'danger'} px-3 py-2">
+                                                ${item.patientGender.toUpperCase() === 'M' ? 'Masculino' : 'Femenino'}
                                             </span>
                                         </td>
                                         <td>${fechaNacimiento}</td>

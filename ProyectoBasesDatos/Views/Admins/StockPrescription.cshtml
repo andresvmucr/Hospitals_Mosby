@@ -112,27 +112,27 @@
             var idHospital = $("#idHospital").val();
 
             $.ajax({
-                url: "@Url.Action("InventarioPrescripcion", "Administradores")",
+                url: "@Url.Action("StockPrescriptionPost", "Admins")",
                 type: "POST",
                 data: { idHospital: idHospital },
                 success: function (response) {
                     console.log(response);
 
                     if (response.success) {
-                        let inventarioData = response.inventario || [];
-                        let prescripcionesData = response.prescripciones || [];
+                        let stockData = response.medStock || [];
+                        let presciptionData = response.prescripciones || [];
 
-                        $("#totalMedicamentos").text(inventarioData.length);
-                        $("#totalPrescripciones").text(prescripcionesData.length);
+                        $("#totalMedicamentos").text(stockData.length);
+                        $("#totalPrescripciones").text(presciptionData.length);
 
                         $("#tablaInventario tbody").empty();
                         $("#tablaPrescripciones tbody").empty();
 
-                        if (inventarioData.length > 0) {
+                        if (stockData.length > 0) {
                             let medicamentosBajoInventario = 0;
 
-                            inventarioData.forEach(function (item) {
-                                if (item.cantidadDisponible < 10) {
+                            stockData.forEach(function (item) {
+                                if (item.availableStock < 10) {
                                     medicamentosBajoInventario++;
                                 }
 
@@ -140,11 +140,11 @@
                                 let estadoClass = 'badge bg-success';
                                 let estadoText = 'Disponible';
 
-                                if (item.cantidadDisponible <= 0) {
+                                if (item.availableStock <= 0) {
                                     rowClass = 'table-danger';
                                     estadoClass = 'badge bg-danger';
                                     estadoText = 'Agotado';
-                                } else if (item.cantidadDisponible < 10) {
+                                } else if (item.availableStock < 10) {
                                     rowClass = 'table-warning';
                                     estadoClass = 'badge bg-warning text-dark';
                                     estadoText = 'Bajo inventario';
@@ -152,11 +152,11 @@
 
                                 $("#tablaInventario tbody").append(
                                     `<tr class="${rowClass}">
-                                        <td>${item.idMedicamento}</td>
-                                        <td>${item.nombreMedicamento}</td>
-                                        <td>${item.descripcionMedicamento || '-'}</td>
-                                        <td>${formatCurrency(item.precioMedicamento)}</td>
-                                        <td class="text-center">${item.cantidadDisponible}</td>
+                                        <td>${item.idMed}</td>
+                                        <td>${item.medName}</td>
+                                        <td>${item.medDescription || '-'}</td>
+                                        <td>${formatCurrency(item.medPrice)}</td>
+                                        <td class="text-center">${item.availableStock}</td>
                                         <td><span class="${estadoClass}">${estadoText}</span></td>
                                     </tr>`
                                 );
@@ -172,17 +172,17 @@
                             $("#noInventario").removeClass("d-none");
                         }
 
-                        if (prescripcionesData.length > 0) {
-                            prescripcionesData.forEach(function (item) {
+                        if (presciptionData.length > 0) {
+                            presciptionData.forEach(function (item) {
                                 $("#tablaPrescripciones tbody").append(
                                     `<tr>
-                                        <td>${item.idPrescripcion}</td>
-                                        <td>${item.nombreMedicamento}</td>
+                                        <td>${item.idPrescription}</td>
+                                        <td>${item.medName}</td>
                                         <td>${item.dosis}</td>
-                                        <td>${item.frecuencia}</td>
-                                        <td>${formatDate(item.fechaPrescripcion)}</td>
-                                        <td>${formatCurrency(item.precioTratamiento)}</td>
-                                        <td>${formatNombreCompleto(item.nombrePaciente, item.primerApellidoPaciente, item.segundoApellidoPaciente)}</td>
+                                        <td>${item.frequency}</td>
+                                        <td>${formatDate(item.preDate)}</td>
+                                        <td>${formatCurrency(item.treatmentPrice)}</td>
+                                        <td>${formatNombreCompleto(item.patientName, item.firstLastName, item.secondLastName)}</td>
                                     </tr>`
                                 );
                             });

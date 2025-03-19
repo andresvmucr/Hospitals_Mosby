@@ -67,7 +67,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            let pagosPendientesData = [];
+            let pendingPayments = [];
             // Validación de la cédula del paciente - solo números y máximo 9 dígitos
             document.getElementById('idPaciente').addEventListener('input', function (event) {
                 this.value = this.value.replace(/[^0-9]/g, '');
@@ -93,37 +93,37 @@
                 $("#noPagosMessage").addClass("d-none");
 
                 $.ajax({
-                    url: "@Url.Action("PagosPendientes", "Administradores")",
+                    url: "@Url.Action("PendingPayments", "Admins")",
                     type: "POST",
-                    data: { idPaciente: idPaciente },
+                    data: { patientId: idPaciente },
                     success: function (response) {
                         console.log(response);
 
                         $("#loadingSpinner").addClass("d-none");
 
                         if (response.success) {
-                            pagosPendientesData = response.pagosPendientes;
+                            pendingPayments = response.pendingPayments;
 
                             if (response.nombrePaciente) {
-                                $("#nombrePaciente").text(response.nombrePaciente);
+                                $("#nombrePaciente").text(response.patientName);
                                 $("#infoPaciente").removeClass("d-none");
                             }
 
-                            const totalPendiente = pagosPendientesData.reduce((total, item) => total + item.pagoPendiente, 0);
-                            $("#totalPendiente").text(formatCurrency(totalPendiente));
+                            const totalDebt = pendingPayments.reduce((total, item) => total + item.pendingPayment, 0);
+                            $("#totalPendiente").text(formatCurrency(totalDebt));
 
                             $("#tablaPagosPendientes tbody").empty();
 
-                            if (pagosPendientesData.length > 0) {
+                            if (pendingPayments.length > 0) {
                                 $("#resultadosContainer").removeClass("d-none");
 
-                                pagosPendientesData.forEach(function (item) {
+                                pendingPayments.forEach(function (item) {
                                     $("#tablaPagosPendientes tbody").append(
                                         `<tr>
-                                            <td class="fw-bold text-danger">${formatCurrency(item.pagoPendiente)}</td>
-                                            <td>${formatDate(item.fechaCita)}</td>
-                                            <td>${item.horaCita}</td>
-                                            <td>${item.nombreEspecialidad}</td>
+                                            <td class="fw-bold text-danger">${formatCurrency(item.pendingPayment)}</td>
+                                            <td>${formatDate(item.appointmentDate)}</td>
+                                            <td>${new Date(item.appointmentHour).toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit', hour12: false})}</td>
+                                            <td>${item.specialtyName}</td>
                                         </tr>`
                                     );
                                 });
