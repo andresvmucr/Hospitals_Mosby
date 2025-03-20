@@ -1,33 +1,115 @@
 ﻿@model IEnumerable<ProyectoBasesDatos.Models.Treatment>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Tratamientos";
 }
 
-<h1>Index</h1>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-procedures me-2"></i>Tratamientos del Sistema</h4>
+            <div>
+                <a asp-action="Create" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i>Nuevo Tratamiento
+                </a>
+            </div>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Appointment.Id)
-            </td>
-        </tr>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="treatmentsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;" class="text-center">#</th>
+                            <th>
+                                <i class="fas fa-calendar-check text-muted me-2"></i>Cita
+                            </th>
+                            <th>
+                                <i class="fas fa-tag text-muted me-2"></i>Precio
+                            </th>
+                            <th style="width: 180px;" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                // Cálculo de letra inicial para avatar (T de Tratamiento)
+                                string treatmentInitial = "T";
+                                // Manejo seguro de valores potencialmente nulos
+                                string price = item.Price.ToString("C");
+                                string appointmentId = item.Appointment?.Id.ToString() ?? "No disponible";
+
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center justify-content-center bg-success text-white rounded-circle mx-auto"
+                                             style="width: 40px; height: 40px; font-weight: bold;">
+                                            @treatmentInitial
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">Cita #@appointmentId</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success bg-opacity-75 rounded-pill px-3 py-2">
+                                            <i class="fas fa-tag me-1"></i>@price
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-end">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm me-1"
+                                               data-bs-toggle="tooltip" data-bs-title="Ver detalles">
+                                                <i class="fas fa-eye me-1"></i>Detalles
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm"
+                                               data-bs-toggle="tooltip" data-bs-title="Editar">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                        <p>No se encontraron tratamientos en el sistema.</p>
+                                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus-circle me-1"></i>Registrar Nuevo Tratamiento
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Inicializar tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Inicializar DataTable si existe
+            if ($.fn.DataTable) {
+                $('#treatmentsTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                    },
+                    responsive: true,
+                    order: [[0, 'asc']]
+                });
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>

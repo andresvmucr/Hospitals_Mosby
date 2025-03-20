@@ -1,78 +1,116 @@
 ﻿@model ProyectoBasesDatos.Models.Appointment
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Cita";
 }
 
-<h1>Create Appointment</h1>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="my-2"><i class="fas fa-calendar-plus me-2"></i>Programar Nueva Cita</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-<h4>Appointment Details</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <!-- Información del Paciente -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-user me-2"></i>Información del Paciente</h5>
 
-            <div class="form-group">
-                <label asp-for="PatientId" class="control-label">Patient</label>
-                <input asp-for="PatientId" class="form-control" required maxlength="9" pattern="\d*" />
-                <span asp-validation-for="PatientId" class="text-danger small"></span>
-                <div class="invalid-feedback">Please select a patient.</div>
-            </div>
+                        <div class="mb-4">
+                            <label asp-for="PatientId" class="form-label">Identificación del Paciente</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                <input asp-for="PatientId" class="form-control" placeholder="Ingrese el ID del paciente" required maxlength="9" pattern="\d*" />
+                            </div>
+                            <span asp-validation-for="PatientId" class="text-danger small"></span>
+                            <div class="form-text">Ingrese el número de identificación del paciente (solo números).</div>
+                        </div>
+                    </div>
 
-            <!-- Specialty Selection -->
-            <div class="form-floating mb-4">
-                <select id="Specialty" class="form-select" required>
-                    <option value="">-- Select a specialty --</option>
-                    @if (ViewBag.Specialty != null)
-                    {
-                        foreach (var specialty in ViewBag.Specialty)
-                        {
-                            <option value="@specialty.Value">@specialty.Text</option>
-                        }
-                    }
-                </select>
-                <label for="Specialty"><i class="fas fa-stethoscope me-1"></i> Specialty</label>
-                <div class="invalid-feedback">Please select a specialty.</div>
-            </div>
+                    <!-- Información Médica -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-stethoscope me-2"></i>Información Médica</h5>
 
-            <!-- Doctor Selection (Auto-populated) -->
-            <div class="form-floating mb-4">
-                <select asp-for="DoctorId" id="DoctorId" class="form-select" required>
-                    <option value="">-- Select a doctor --</option>
-                </select>
-                <label asp-for="DoctorId"><i class="fas fa-user-md me-1"></i> Doctor</label>
-                <span asp-validation-for="DoctorId" class="text-danger small"></span>
-                <div class="invalid-feedback">Please select a doctor.</div>
-            </div>
+                        <!-- Specialty Selection -->
+                        <div class="mb-4">
+                            <label for="Specialty" class="form-label">Especialidad</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                                <select id="Specialty" class="form-select" required>
+                                    <option value="">-- Seleccione una especialidad --</option>
+                                    @if (ViewBag.Specialty != null)
+                                    {
+                                        foreach (var specialty in ViewBag.Specialty)
+                                        {
+                                            <option value="@specialty.Value">@specialty.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="invalid-feedback">Por favor, seleccione una especialidad.</div>
+                        </div>
 
-            <div class="form-floating mb-4">
-                <input asp-for="ADay" id="ADay" type="date" class="form-control" required />
-                <label asp-for="ADay"><i class="fas fa-calendar-day me-1"></i>Día</label>
-                <span asp-validation-for="ADay" class="text-danger small"></span>
-                <div class="invalid-feedback">Por favor, seleccione un día.</div>
-            </div>
+                        <!-- Doctor Selection (Auto-populated) -->
+                        <div class="mb-4">
+                            <label asp-for="DoctorId" class="form-label">Doctor</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-md"></i></span>
+                                <select asp-for="DoctorId" id="DoctorId" class="form-select" required>
+                                    <option value="">-- Seleccione un doctor --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="DoctorId" class="text-danger small"></span>
+                            <div class="invalid-feedback">Por favor, seleccione un doctor.</div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="form-floating mb-4">
-                <select asp-for="AHour" id="AHour" class="form-select" required>
-                    <option value="">-- Seleccione una hora --</option>
-                </select>
-                <label asp-for="AHour"><i class="fas fa-clock me-1"></i>Hora de la Cita</label>
-                <span asp-validation-for="AHour" class="text-danger small"></span>
-                <div class="invalid-feedback">Por favor, seleccione una hora.</div>
-            </div>
+                <!-- Información de la Cita -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-clock me-2"></i>Programación de la Cita</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <label asp-for="ADay" class="form-label">Fecha de la Cita</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                <input asp-for="ADay" id="ADay" type="date" class="form-control" required />
+                            </div>
+                            <span asp-validation-for="ADay" class="text-danger small"></span>
+                            <div class="form-text">Seleccione una fecha para su cita.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <label asp-for="AHour" class="form-label">Hora de la Cita</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <select asp-for="AHour" id="AHour" class="form-select" required>
+                                    <option value="">-- Seleccione una hora --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="AHour" class="text-danger small"></span>
+                            <div class="form-text">Horarios disponibles para la fecha seleccionada.</div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Submit Button -->
-            <div class="form-group">
-                <input type="submit" value="Create Appointment" class="btn btn-primary" />
-            </div>
-        </form>
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-check me-2"></i>Programar Cita
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<!-- Back to List -->
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {
@@ -82,11 +120,17 @@
 
     <!-- JavaScript for Dynamic Doctor Selection -->
     <script>
-                $(document).ready(function () {
+        $(document).ready(function () {
+            // Inicializar tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
             // Cargar doctores al seleccionar una especialidad
             $('#Specialty').change(function () {
                 var specialtyId = $(this).val();
-                console.log("Specialty ID: " + specialtyId);
+                $('#DoctorId').empty().append('<option value="">-- Cargando doctores... --</option>');
 
                 if (specialtyId) {
                     $.ajax({
@@ -98,26 +142,41 @@
                             doctorSelect.empty().append('<option value="">-- Seleccione un doctor --</option>');
 
                             if (data.length === 0) {
-                                $('#DoctorId').empty().append('<option value="">-- No hay doctores --</option>');
+                                doctorSelect.empty().append('<option value="">-- No hay doctores disponibles --</option>');
+                                showAlert('warning', 'No hay doctores disponibles para esta especialidad.');
                             } else {
                                 $.each(data, function (index, doctor) {
                                     doctorSelect.append('<option value="' + doctor.id + '">' + doctor.fullName + '</option>');
                                 });
                             }
+
+                            // Reset fecha y hora cuando cambia el doctor
+                            $('#ADay').val('');
+                            $('#AHour').empty().append('<option value="">-- Seleccione primero una fecha --</option>').prop('disabled', true);
                         },
                         error: function () {
-                            alert('An error occurred while loading the doctors.');
+                            showAlert('danger', 'Ocurrió un error al cargar los doctores.');
+                            $('#DoctorId').empty().append('<option value="">-- Error al cargar doctores --</option>');
                         }
                     });
                 } else {
-                    $('#DoctorId').empty().append('<option value="">-- Seleccione un doctor --</option>');
+                    $('#DoctorId').empty().append('<option value="">-- Seleccione una especialidad primero --</option>');
+                    $('#ADay').val('');
+                    $('#AHour').empty().append('<option value="">-- Seleccione primero una fecha --</option>').prop('disabled', true);
                 }
+            });
+
+            // Resetear la hora cuando cambia el doctor
+            $('#DoctorId').change(function() {
+                $('#ADay').val('');
+                $('#AHour').empty().append('<option value="">-- Seleccione primero una fecha --</option>').prop('disabled', true);
             });
 
             // Cargar horas disponibles al seleccionar un día
             $('#ADay').change(function () {
                 var doctorId = $('#DoctorId').val();
                 var selectedDay = $(this).val();
+                $('#AHour').empty().append('<option value="">-- Cargando horarios... --</option>');
 
                 if (doctorId && selectedDay) {
                     $.ajax({
@@ -129,31 +188,63 @@
                             hourSelect.empty();
 
                             if (data.length > 0) {
-                                console.log("Appending hours");
-                                hourSelect.append('<option value="">-- Select a time --</option>');
+                                hourSelect.append('<option value="">-- Seleccione una hora --</option>');
                                 $.each(data, function (index, hour) {
-                                    console.log("Adding hour:", hour); // Verifica cada hora
-                                    hourSelect.append('<option value="' + hour + '">' + hour + '</option>');
+                                    var formattedHour = formatTime(hour);
+                                    hourSelect.append('<option value="' + hour + '">' + formattedHour + '</option>');
                                 });
                                 hourSelect.prop('disabled', false);
                             } else {
-                                hourSelect.append('<option value="">-- No available hours --</option>');
+                                hourSelect.append('<option value="">-- No hay horarios disponibles --</option>');
                                 hourSelect.prop('disabled', true);
+                                showAlert('warning', 'No hay horarios disponibles para la fecha seleccionada.');
                             }
                         },
                         error: function () {
-                            alert('Error loading available hours.');
+                            showAlert('danger', 'Error al cargar los horarios disponibles.');
+                            $('#AHour').empty().append('<option value="">-- Error al cargar horarios --</option>').prop('disabled', true);
                         }
                     });
                 } else {
-                    $('#AHour').empty().append('<option value="">-- No available hours --</option>').prop('disabled', true);
+                    $('#AHour').empty().append('<option value="">-- Primero seleccione un doctor y una fecha --</option>').prop('disabled', true);
                 }
             });
+
+            // Función para formatear la hora en formato 12 horas (más amigable)
+            function formatTime(timeString) {
+                if (!timeString) return '';
+
+                // Si el formato es HH:mm
+                var timeParts = timeString.split(':');
+                var hours = parseInt(timeParts[0]);
+                var minutes = timeParts[1];
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Si es 0, mostrar como 12
+
+                return hours + ':' + minutes + ' ' + ampm;
+            }
+
+            // Función para mostrar alertas
+            function showAlert(type, message) {
+                var alertDiv = $('<div class="alert alert-' + type + ' alert-dismissible fade show mt-3" role="alert">' +
+                    message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                    '</div>');
+
+                // Insertar la alerta después del título
+                $('.card-header').after(alertDiv);
+
+                // Auto ocultar después de 5 segundos
+                setTimeout(function() {
+                    alertDiv.alert('close');
+                }, 5000);
+            }
 
             // Restricción para no permitir seleccionar fechas pasadas
             var today = new Date().toISOString().split('T')[0];
             $('#ADay').attr('min', today);
         });
-
     </script>
 }

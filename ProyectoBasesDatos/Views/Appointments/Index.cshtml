@@ -1,44 +1,161 @@
 ﻿@model IEnumerable<dynamic>
 
 @{
-    ViewData["Title"] = "Citas";
+    ViewData["Title"] = "Gestión de Citas";
 }
 
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Citas Programadas</h4>
+            <div>
+                <a asp-action="Create" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i>Nueva Cita
+                </a>
+            </div>
+        </div>
 
-<div class="container">
-    <h2>Citas Programadas</h2>
+        <div class="card-body p-4">
+            <!-- Filtro de búsqueda -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por paciente, doctor o especialidad...">
+                        <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <a asp-action="Create" class="btn btn-primary rounded-pill shadow">
-                <i class="fas fa-user-plus me-2"></i> Nueva Cita
-            </a>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="appointmentsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;" class="text-center">#</th>
+                            <th>
+                                <i class="fas fa-calendar-day text-muted me-2"></i>Fecha
+                            </th>
+                            <th>
+                                <i class="fas fa-clock text-muted me-2"></i>Hora
+                            </th>
+                            <th>
+                                <i class="fas fa-user text-muted me-2"></i>Paciente
+                            </th>
+                            <th>
+                                <i class="fas fa-user-md text-muted me-2"></i>Doctor
+                            </th>
+                            <th>
+                                <i class="fas fa-stethoscope text-muted me-2"></i>Especialidad
+                            </th>
+                            <th style="width: 180px;" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var appointment in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center justify-content-center bg-info text-white rounded-circle mx-auto"
+                                             style="width: 40px; height: 40px; font-weight: bold;">
+                                            @appointment.Appointment.Id
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@appointment.Appointment.ADay.ToString("dd/MM/yyyy")</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info bg-opacity-75 rounded-pill px-3 py-2">
+                                            <i class="fas fa-clock me-1"></i>@appointment.Appointment.AHour.ToString("HH:mm")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@appointment.PatientFullName</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@appointment.DoctorFullName</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary bg-opacity-75 rounded-pill px-3 py-2">
+                                            <i class="fas fa-stethoscope me-1"></i>@appointment.SpecialtyName
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-end">
+                                            <a asp-action="Details" asp-route-id="@appointment.Appointment.Id" class="btn btn-outline-info btn-sm me-1"
+                                               data-bs-toggle="tooltip" data-bs-title="Ver detalles">
+                                                <i class="fas fa-eye me-1"></i>Detalles
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@appointment.Appointment.Id" class="btn btn-outline-warning btn-sm"
+                                               data-bs-toggle="tooltip" data-bs-title="Editar">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@appointment.Appointment.Id" class="btn btn-outline-danger btn-sm"
+                                               data-bs-toggle="tooltip" data-bs-title="Cancelar">
+                                                <i class="fas fa-trash-alt me-1"></i>Cancelar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                        <p>No hay citas programadas en el sistema.</p>
+                                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus-circle me-1"></i>Registrar Nueva Cita
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID Cita</th>
-                <th>Fecha </th>
-                <th>Hora </h>
-                <th>Paciente</th>
-                <th>Doctor</th>
-                <th>Especialidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var appointment in Model)
-            {
-                <tr>
-                    <td>@appointment.Appointment.Id</td>
-                    <td>@appointment.Appointment.ADay</td>
-                    <td>@appointment.Appointment.AHour.ToString("HH:mm")</td>
-                    <td>@appointment.PatientFullName</td>
-                    <td>@appointment.DoctorFullName</td>
-                    <td>@appointment.SpecialtyName</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Inicializar tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Filtro de búsqueda
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#appointmentsTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Limpiar búsqueda
+            $("#clearSearch").click(function() {
+                $("#searchInput").val("");
+                $("#appointmentsTable tbody tr").show();
+            });
+
+            // Inicializar DataTable si existe
+            if ($.fn.DataTable) {
+                $('#appointmentsTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                    },
+                    responsive: true,
+                    order: [[0, 'asc']]
+                });
+            }
+        });
+    </script>
+}

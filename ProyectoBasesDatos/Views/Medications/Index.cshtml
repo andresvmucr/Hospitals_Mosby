@@ -1,40 +1,131 @@
 ﻿@model IEnumerable<ProyectoBasesDatos.Models.Medication>
-
 @{
-    ViewData["Title"] = "Medicinas";
+    ViewData["Title"] = "Gestión de Medicamentos";
 }
 
-<h2>Medicinas</h2>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-pills me-2"></i>Medicamentos del Sistema</h4>
+            <div>
+                <a asp-action="Create" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i>Nuevo Medicamento
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</p>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="medicationsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;" class="text-center">#</th>
+                            <th style="width: 25%;">
+                                <i class="fas fa-pills text-muted me-2"></i>Medicamento
+                            </th>
+                            <th>
+                                <i class="fas fa-info-circle text-muted me-2"></i>Descripción
+                            </th>
+                            <th>
+                                <i class="fas fa-tag text-muted me-2"></i>Precio
+                            </th>
+                            <th>
+                                <i class="fas fa-boxes text-muted me-2"></i>Stock
+                            </th>
+                            <th style="width: 180px;" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                // Manejo seguro de valores potencialmente nulos
+                                string medicationName = !string.IsNullOrEmpty(item.MName) ? item.MName : "Sin nombre";
+                                string medicationInitial = !string.IsNullOrEmpty(item.MName) ? item.MName.Substring(0, 1).ToUpper() : "?";
+                                string description = !string.IsNullOrEmpty(item.MDescription) ? (item.MDescription.Length > 50 ? item.MDescription.Substring(0, 50) + "..." : item.MDescription) : "No disponible";
+                                string price = item.HospitalMeds?.Price != null ? item.HospitalMeds.Price.ToString("C") : "No disponible";
+                                string stock = item.HospitalMeds?.Stock != null ? item.HospitalMeds.Stock.ToString() : "0";
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th> <!-- Nueva columna para las acciones -->
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.MName</td>
-                <td>@item.MDescription</td>
-                <td>@item.HospitalMeds?.Price.ToString("C")</td>
-                <td>@item.HospitalMeds?.Stock</td>
-                <td>
-                    <!-- Enlace para "Ver" detalles -->
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Ver</a>
-                    <!-- Enlace para "Editar" -->
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle mx-auto"
+                                             style="width: 40px; height: 40px; font-weight: bold;">
+                                            @medicationInitial
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@medicationName</span>
+                                        <small class="text-muted">Código: @item.Id</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@description</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success bg-opacity-75 rounded-pill px-3 py-2">
+                                            <i class="fas fa-tag me-1"></i>@price
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(Convert.ToInt32(stock) > 10 ? "bg-info" : "bg-warning") bg-opacity-75 rounded-pill px-3 py-2">
+                                            <i class="fas fa-boxes me-1"></i>@stock unidades
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-end">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm me-1"
+                                               data-bs-toggle="tooltip" data-bs-title="Ver detalles">
+                                                <i class="fas fa-eye me-1"></i>Detalles
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm"
+                                               data-bs-toggle="tooltip" data-bs-title="Editar">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                        <p>No se encontraron medicamentos en el sistema.</p>
+                                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus-circle me-1"></i>Registrar Nuevo Medicamento
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Inicializar tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Inicializar DataTable si existe
+            if ($.fn.DataTable) {
+                $('#medicationsTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                    },
+                    responsive: true,
+                    order: [[0, 'asc']]
+                });
+            }
+        });
+    </script>
+}
