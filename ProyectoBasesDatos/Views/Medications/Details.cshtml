@@ -79,20 +79,6 @@
                                     }
                                     <p class="mb-0 fs-4 fw-bold @stockClass">@(Model.HospitalMeds?.Stock)</p>
                                 </div>
-
-                                <div class="mt-4">
-                                    <div class="progress" style="height: 25px">
-                                        @{
-                                            // Suponiendo un stock máximo de 100 para la barra de progreso
-                                            var stockPercentage = Math.Min((Model.HospitalMeds?.Stock ?? 0) * 100 / 100, 100);
-                                            var progressClass = stockPercentage > 66 ? "bg-success" : (stockPercentage > 33 ? "bg-warning" : "bg-danger");
-                                        }
-                                        <div class="progress-bar @progressClass" role="progressbar" style="width: @stockPercentage%;"
-                                             aria-valuenow="@(Model.HospitalMeds?.Stock)" aria-valuemin="0" aria-valuemax="100">
-                                            @(Model.HospitalMeds?.Stock)
-                                        </div>
-                                    </div>
-                                </div>
                             }
                             else
                             {

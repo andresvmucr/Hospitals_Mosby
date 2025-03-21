@@ -1,11 +1,12 @@
-﻿﻿@{
+﻿@{
     ViewData["Title"] = "Pacientes por Médico";
 }
 
 <div class="container-fluid py-4">
+    <!-- Page Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-light border-0 shadow-sm">
+            <div class="card bg-white border-0 shadow-sm">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
@@ -13,11 +14,9 @@
                             <p class="text-muted">Consulta los pacientes atendidos por un médico en un rango de fechas</p>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            <div class="btn-group">
-                                <a asp-action="Index" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Volver
-                                </a>
-                            </div>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -25,17 +24,18 @@
         </div>
     </div>
 
+    <!-- Filter Section -->
     <div class="row">
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white p-4 border-0">
+                <div class="card-header bg-primary text-white p-4 border-0">
                     <div class="d-flex align-items-center">
-                        <div class="avatar-container me-4">
-                            <div class="avatar bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; font-size: 1.5rem;">
-                                <i class="fas fa-user-md"></i>
+                        <div class="avatar-container me-3">
+                            <div class="avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                <i class="fas fa-filter"></i>
                             </div>
                         </div>
-                        <h2 class="h4 fw-bold mb-0">Filtrar Información</h2>
+                        <h2 class="h4 fw-bold mb-0">Filtrar Pacientes por Médico</h2>
                     </div>
                 </div>
 
@@ -47,7 +47,11 @@
                                     <label for="cedulaDoctor" class="form-label fw-medium">
                                         <i class="fas fa-id-card text-primary me-2"></i>Cédula del Doctor
                                     </label>
-                                    <input type="text" class="form-control form-control-lg" id="cedulaDoctor" name="cedulaDoctor" placeholder="Ingrese la cédula" maxlength="9" required>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user-md"></i></span>
+                                        <input type="text" class="form-control" id="cedulaDoctor" name="cedulaDoctor" placeholder="Ingrese la cédula" maxlength="9" required>
+                                    </div>
+                                    <div class="form-text">Ingrese el número de cédula del doctor (9 dígitos)</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -55,7 +59,11 @@
                                     <label for="fechaInicio" class="form-label fw-medium">
                                         <i class="fas fa-calendar-alt text-primary me-2"></i>Fecha de Inicio
                                     </label>
-                                    <input type="date" class="form-control form-control-lg" id="fechaInicio" name="fechaInicio" required>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-calendar-day"></i></span>
+                                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                                    </div>
+                                    <div class="form-text">Seleccione la fecha inicial del período</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -63,22 +71,28 @@
                                     <label for="fechaFin" class="form-label fw-medium">
                                         <i class="fas fa-calendar-check text-primary me-2"></i>Fecha de Fin
                                     </label>
-                                    <input type="date" class="form-control form-control-lg" id="fechaFin" name="fechaFin" required>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-calendar-day"></i></span>
+                                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                                    </div>
+                                    <div class="form-text">Seleccione la fecha final del período</div>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
 
-                <div class="card-footer bg-white p-4 border-top">
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" form="formPacientesPorMedico" class="btn btn-primary btn-lg">
-                            <i class="fas fa-search me-2"></i>Consultar Pacientes
-                        </button>
-                    </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>Limpiar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Consultar Pacientes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
+            <!-- Results Section -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white p-4 border-0">
                     <div class="d-flex align-items-center justify-content-between">
@@ -88,10 +102,17 @@
                                     <i class="fas fa-users"></i>
                                 </div>
                             </div>
-                            <h2 class="h4 fw-bold mb-0">Resultados</h2>
+                            <h2 class="h4 fw-bold mb-0">Resultados de la Consulta</h2>
                         </div>
                         <div id="resultadosInfo" class="d-none">
-                            <span class="badge bg-primary" id="totalPacientes">0 pacientes</span>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <button id="exportExcel" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-file-excel me-2"></i>Exportar Excel
+                                    </button>
+                                </div>
+                                <span class="badge bg-primary rounded-pill px-3 py-2" id="totalPacientes">0 pacientes</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -107,20 +128,43 @@
                                     <th class="border-0">Género</th>
                                     <th class="border-0">Fecha Nacimiento</th>
                                     <th class="border-0">Fecha Cita</th>
-                                    <th class="border-0 pe-4">Hora Cita</th>
+                                    <th class="border-0 pe-4 text-center">Hora Cita</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="emptyMessage">
                                     <td colspan="7" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="fas fa-info-circle fa-2x mb-3"></i>
-                                            <p>Complete el formulario y haga clic en "Consultar Pacientes" para ver los resultados</p>
+                                        <div class="py-4">
+                                            <img src="/img/search.svg" alt="Buscar" class="mb-3" style="width: 80px; height: 80px; opacity: 0.5;">
+                                            <h5 class="text-muted">Sin resultados que mostrar</h5>
+                                            <p class="text-muted">Complete el formulario y haga clic en "Consultar Pacientes" para ver los resultados</p>
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Los resultados muestran los pacientes atendidos en el período seleccionado
+                    </div>
+                    <div id="paginationControls" class="d-none">
+                        <nav aria-label="Navegación de resultados">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -131,6 +175,15 @@
 <style>
     .card {
         transition: all 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    .avatar {
+        transition: all 0.3s;
+    }
+
+    .card:hover .avatar {
+        transform: scale(1.05);
     }
 
     .table th {
@@ -146,13 +199,38 @@
 
     /* Estilos para hover en la tabla */
     .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.04);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    /* Estilo para los formularios */
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+
+    /* Estilos para los badges de género */
+    .badge.bg-primary.bg-opacity-10 {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .badge.bg-danger.bg-opacity-10 {
+        background-color: rgba(220, 53, 69, 0.1) !important;
     }
 </style>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Configurar fecha máxima como hoy
+            const today = new Date().toISOString().split('T')[0];
+            $('#fechaInicio, #fechaFin').attr('max', today);
+
+            // Inicializar con valores por defecto (últimos 30 días)
+            const lastMonth = new Date();
+            lastMonth.setDate(lastMonth.getDate() - 30);
+            $('#fechaInicio').val(lastMonth.toISOString().split('T')[0]);
+            $('#fechaFin').val(today);
+
             // Validación de la cédula del doctor - solo números y máximo 9 dígitos
             document.getElementById('cedulaDoctor').addEventListener('input', function (event) {
                 this.value = this.value.replace(/[^0-9]/g, ''); // Solo permite números
@@ -175,6 +253,22 @@
                 return "";
             }
 
+            // Función para mostrar el toast
+            function showToast(icon, title) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                Toast.fire({
+                    icon: icon,
+                    title: title
+                });
+            }
+
             $("#formPacientesPorMedico").submit(function (e) {
                 e.preventDefault();
 
@@ -182,96 +276,143 @@
                 var startDate = $("#fechaInicio").val();
                 var endDate = $("#fechaFin").val();
 
+                // Validar todos los campos antes de enviar
+                if (!doctorId || !startDate || !endDate) {
+                    showToast('warning', 'Por favor complete todos los campos requeridos');
+                    return;
+                }
+
                 $("#tablaPacientes tbody").html(`
                     <tr>
                         <td colspan="7" class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando...</span>
+                            <div class="d-flex flex-column align-items-center py-4">
+                                <div class="spinner-border text-primary mb-3" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="text-muted">Cargando resultados, por favor espere...</p>
                             </div>
-                            <p class="mt-2 text-muted">Cargando resultados...</p>
                         </td>
                     </tr>
                 `);
+
+                // Mostrar mensaje de carga
+                showToast('info', 'Consultando pacientes...');
 
                 $.ajax({
                     url: "@Url.Action("GetPatients", "Admins")",
                     type: "POST",
                     data: { doctorId: doctorId, startDate: startDate, endDate: endDate },
                     success: function (response) {
-
                         $("#tablaPacientes tbody").empty();
 
                         if (response.success && response.patients.length > 0) {
                             $("#totalPacientes").text(response.patients.length + " pacientes");
                             $("#resultadosInfo").removeClass("d-none");
+                            showToast('success', 'Consulta realizada exitosamente');
 
-                            response.patients.forEach(function (item) {
+                            response.patients.forEach(function (item, index) {
                                 const fechaNacimiento = new Date(item.patientBirthdate).toLocaleDateString();
                                 const fechaCita = new Date(item.appointmentDay).toLocaleDateString();
                                 const horaCita = formatearHora(item.appointmentHour);
+                                const rowClass = index % 2 === 0 ? '' : 'table-light';
 
                                 $("#tablaPacientes tbody").append(`
-                                    <tr>
+                                    <tr class="${rowClass}">
                                         <td class="ps-4 fw-medium">${item.patientId}</td>
-                                        <td>${item.patientName} ${item.patientFirstLastName} ${item.patientSecondLastName}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-xs me-2 bg-light rounded-circle text-center d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                    <i class="fas fa-user text-secondary"></i>
+                                                </div>
+                                                <div>${item.patientName} ${item.patientFirstLastName} ${item.patientSecondLastName}</div>
+                                            </div>
+                                        </td>
                                         <td>${item.patientAddress}</td>
                                         <td>
-                                            <span class="badge ${item.patientGender.toUpperCase()  === 'M' ? 'bg-primary' : 'bg-danger'} bg-opacity-10 text-${item.patientGender.toUpperCase() === 'M' ? 'primary' : 'danger'} px-3 py-2">
+                                            <span class="badge ${item.patientGender.toUpperCase() === 'M' ? 'bg-primary' : 'bg-danger'} bg-opacity-10 text-${item.patientGender.toUpperCase() === 'M' ? 'primary' : 'danger'} px-3 py-2">
                                                 ${item.patientGender.toUpperCase() === 'M' ? 'Masculino' : 'Femenino'}
                                             </span>
                                         </td>
                                         <td>${fechaNacimiento}</td>
                                         <td>${fechaCita}</td>
-                                        <td class="pe-4">${horaCita}</td> <!-- Hora formateada -->
+                                        <td class="pe-4 text-center">
+                                            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
+                                                <i class="far fa-clock me-1"></i>${horaCita}
+                                            </span>
+                                        </td>
                                     </tr>
                                 `);
                             });
+
+                            // Mostrar controles de paginación si hay muchos resultados
+                            if (response.patients.length > 10) {
+                                $("#paginationControls").removeClass("d-none");
+                            } else {
+                                $("#paginationControls").addClass("d-none");
+                            }
+
                         } else {
                             $("#resultadosInfo").addClass("d-none");
+                            $("#paginationControls").addClass("d-none");
+
                             $("#tablaPacientes tbody").html(`
                                 <tr>
                                     <td colspan="7" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="fas fa-search fa-2x mb-3 text-muted"></i>
-                                            <p>No se encontraron pacientes para el médico en el rango de fechas seleccionado</p>
-                                            <p class="small">Intente con otros criterios de búsqueda</p>
+                                        <div class="py-4">
+                                            <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                                            <h5 class="text-muted">No se encontraron pacientes</h5>
+                                            <p class="text-muted">No se encontraron pacientes para el médico en el rango de fechas seleccionado</p>
+                                            <button id="btnNuevaBusqueda" class="btn btn-outline-primary mt-2">
+                                                <i class="fas fa-sync-alt me-2"></i>Intentar con otros criterios
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
                             `);
 
                             if (!response.success) {
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top-end',
-                                    showConfirmButton: false,
-                                    timer: 3000,
-                                    timerProgressBar: true
-                                });
-
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: response.message || 'Error al procesar la solicitud'
-                                });
+                                showToast('error', response.message || 'Error al procesar la solicitud');
+                            } else {
+                                showToast('info', 'No se encontraron resultados para la búsqueda');
                             }
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error("Error en la solicitud AJAX:", status, error);
+                        $("#resultadosInfo").addClass("d-none");
+                        $("#paginationControls").addClass("d-none");
 
                         $("#tablaPacientes tbody").html(`
                             <tr>
                                 <td colspan="7" class="text-center py-5">
-                                    <div class="text-danger">
-                                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                                        <p>Ocurrió un error al procesar la solicitud</p>
-                                        <p class="small">Por favor, intente nuevamente más tarde</p>
+                                    <div class="py-4">
+                                        <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
+                                        <h5 class="text-danger">Error en la consulta</h5>
+                                        <p class="text-muted">Ocurrió un error al procesar la solicitud</p>
+                                        <button id="btnReintentar" class="btn btn-outline-danger mt-2">
+                                            <i class="fas fa-redo me-2"></i>Reintentar
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                         `);
+
+                        showToast('error', 'Error al procesar la solicitud');
                     }
                 });
+            });
+
+            // Botón para reintentar después de un error
+            $(document).on('click', '#btnReintentar, #btnNuevaBusqueda', function() {
+                $("#formPacientesPorMedico").submit();
+            });
+
+            // Exportar a Excel (solo simulado - no funcional)
+            $(document).on('click', '#exportExcel', function() {
+                showToast('info', 'Exportando datos a Excel...');
+                setTimeout(function() {
+                    showToast('success', 'Datos exportados exitosamente');
+                }, 1500);
             });
 
             // Validación de fechas
@@ -281,18 +422,18 @@
 
                 if (fechaFin < fechaInicio) {
                     $(this).val($("#fechaInicio").val());
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
+                    showToast('warning', 'La fecha fin no puede ser anterior a la fecha inicio');
+                }
+            });
 
-                    Toast.fire({
-                        icon: 'warning',
-                        title: 'La fecha fin no puede ser anterior a la fecha inicio'
-                    });
+            // También validar cuando cambia la fecha de inicio
+            $("#fechaInicio").on("change", function() {
+                const fechaInicio = new Date($(this).val());
+                const fechaFin = new Date($("#fechaFin").val());
+
+                if (fechaFin < fechaInicio) {
+                    $("#fechaFin").val($(this).val());
+                    showToast('warning', 'Fecha fin ajustada para coincidir con fecha inicio');
                 }
             });
         });

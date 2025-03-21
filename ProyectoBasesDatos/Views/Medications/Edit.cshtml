@@ -1,63 +1,109 @@
 ﻿@model ProyectoBasesDatos.Models.Medication
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Medicamento";
 }
 
-<h1>Edit</h1>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="my-2"><i class="fas fa-capsules me-2"></i>Editar Medicamento</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="Id" />
 
-<h4>Medication</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+                <div class="row">
+                    <!-- Información Básica del Medicamento -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
 
-            <!-- Campo MName -->
-            <div class="form-group">
-                <label asp-for="MName" class="control-label"></label>
-                <input asp-for="MName" class="form-control" />
-                <span asp-validation-for="MName" class="text-danger"></span>
-            </div>
+                        <div class="mb-4">
+                            <label asp-for="MName" class="form-label">Nombre del Medicamento</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-prescription-bottle-alt"></i></span>
+                                <input asp-for="MName" class="form-control" placeholder="Nombre del medicamento" required />
+                            </div>
+                            <span asp-validation-for="MName" class="text-danger small"></span>
+                            <div class="form-text">Ingrese el nombre comercial o genérico del medicamento.</div>
+                        </div>
 
-            <!-- Campo MDescription -->
-            <div class="form-group">
-                <label asp-for="MDescription" class="control-label"></label>
-                <input asp-for="MDescription" class="form-control" />
-                <span asp-validation-for="MDescription" class="text-danger"></span>
-            </div>
+                        <div class="mb-4">
+                            <label asp-for="MDescription" class="form-label">Descripción</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-medical-alt"></i></span>
+                                <textarea asp-for="MDescription" class="form-control" rows="3" placeholder="Describa el medicamento..."></textarea>
+                            </div>
+                            <span asp-validation-for="MDescription" class="text-danger small"></span>
+                            <div class="form-text">Añada información sobre uso, contraindicaciones o efectos.</div>
+                        </div>
+                    </div>
 
-            <!-- Campo Price -->
-            <div class="form-group">
-                <label for="Price" class="control-label">Precio</label>
-                <input name="Price" class="form-control" type="number" step="0.01" value="@ViewBag.Price" />
-                <span class="text-danger"></span>
-            </div>
+                    <!-- Información de Inventario -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3 text-primary"><i class="fas fa-boxes me-2"></i>Información de Inventario</h5>
 
+                        <div class="mb-4">
+                            <label for="Price" class="form-label">Precio</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input name="Price" id="Price" class="form-control" type="number" step="0.01" min="0" value="@ViewBag.Price" required />
+                            </div>
+                            <div class="form-text">Precio por unidad del medicamento.</div>
+                        </div>
 
-            <!-- Campo Stock -->
-            <div class="form-group">
-                <label for="Stock" class="control-label">Stock</label>
-                <input name="Stock" class="form-control" type="number" value="@ViewBag.Stock" />
-                <span class="text-danger"></span>
-            </div>
+                        <div class="mb-4">
+                            <label for="Stock" class="form-label">Stock Disponible</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-cubes"></i></span>
+                                <input name="Stock" id="Stock" class="form-control" type="number" min="0" value="@ViewBag.Stock" required />
+                            </div>
+                            <div class="form-text">Cantidad de unidades disponibles en inventario.</div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Botón de guardar -->
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<!-- Enlace para volver a la lista -->
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            // Inicializar tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Formatear campo de precio para mostrar dos decimales
+            $('#Price').on('blur', function() {
+                var value = parseFloat($(this).val());
+                if (!isNaN(value)) {
+                    $(this).val(value.toFixed(2));
+                }
+            });
+
+            // Validar que el stock sea un número entero positivo
+            $('#Stock').on('input', function() {
+                $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            });
+        });
+    </script>
 }
